@@ -7,6 +7,7 @@ import Layout from "./components/Layout"
 import Explore from "./pages/Explore"
 import Events from "./pages/Events"
 import About from "./pages/About"
+import PlaceDetailPage from "./components/PlaceDetailPage" // ⭐注意路径
 
 export default function App() {
   return (
@@ -15,6 +16,9 @@ export default function App() {
         <Route index element={<Explore />} />
         <Route path="events" element={<Events />} />
         <Route path="about" element={<About />} />
+
+        {/* ⭐ 新增 */}
+        <Route path="places/:id" element={<PlaceDetailPage />} />
       </Route>
     </Routes>
   )

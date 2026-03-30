@@ -13,13 +13,11 @@ const mockPlaces = [
     id: 1,
     name: "Community Hall A",
     capacity: 30,
-    area: "Hackney"
-  },
-  {
-    id: 2,
-    name: "Church Kitchen",
-    capacity: 50,
-    area: "Tower Hamlets"
+    area: "Hackney",
+    coords: [51.545, -0.055], // 原格式
+    events: [
+      { id: 1, title: "Chinese Food Night" }
+    ]
   }
 ]
 

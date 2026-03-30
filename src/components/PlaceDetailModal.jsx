@@ -16,7 +16,11 @@
 // Request / Book
 // Host event here
 
+import { useNavigate } from "react-router-dom"
+
 export default function PlaceDetailModal({ place, onClose }) {
+  const navigate = useNavigate()
+
   return (
     <div style={{
       position: "fixed",
@@ -24,23 +28,39 @@ export default function PlaceDetailModal({ place, onClose }) {
       left: 0,
       right: 0,
       bottom: 0,
-      background: "rgba(0,0,0,0.5)"
+      background: "rgba(0,0,0,0.5)",
+      zIndex: 9999
     }}>
       <div style={{
         background: "white",
         padding: "20px",
-        margin: "100px auto",
-        width: "300px"
+        margin: "80px auto",
+        width: "400px"
       }}>
         <h2>{place.name}</h2>
+
         <p>Capacity: {place.capacity}</p>
+        <p>Area: {place.area}</p>
 
-        <button>Request Space</button>
-        <button style={{ marginLeft: "10px" }}>
-          View Details
-        </button>
+        <h3>Upcoming Events</h3>
+        {place.events?.map(e => (
+          <p key={e.id}>• {e.title}</p>
+        ))}
 
-        <br /><br />
+        <hr />
+
+        <div style={{ display: "flex", gap: "10px" }}>
+          <button>Request Space</button>
+
+          {/* ⭐关键 */}
+          <button
+            onClick={() => navigate(`/places/${place.id}`)}
+          >
+            View Full Details
+          </button>
+        </div>
+
+        <br />
         <button onClick={onClose}>Close</button>
       </div>
     </div>
