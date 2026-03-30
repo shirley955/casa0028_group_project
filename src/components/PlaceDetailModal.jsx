@@ -15,3 +15,34 @@
 // View full details
 // Request / Book
 // Host event here
+
+export default function PlaceDetailModal({ place, onClose }) {
+  return (
+    <div style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      background: "rgba(0,0,0,0.5)"
+    }}>
+      <div style={{
+        background: "white",
+        padding: "20px",
+        margin: "100px auto",
+        width: "300px"
+      }}>
+        <h2>{place.name}</h2>
+        <p>Capacity: {place.capacity}</p>
+
+        <button>Request Space</button>
+        <button style={{ marginLeft: "10px" }}>
+          View Details
+        </button>
+
+        <br /><br />
+        <button onClick={onClose}>Close</button>
+      </div>
+    </div>
+  )
+}

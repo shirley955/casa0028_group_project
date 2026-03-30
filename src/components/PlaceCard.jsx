@@ -12,3 +12,22 @@
 
 // 这里主要是用做对比面板，可以直接点进最详细的页面里
 // popup也可以一路进入最详细页，但不适合用来对比（要一个一个地点看），card可以提供这个功能。
+
+
+export default function PlaceCard({ place, onClick }) {
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        border: "1px solid #ccc",
+        padding: "10px",
+        margin: "10px 0",
+        cursor: "pointer"
+      }}
+    >
+      <h3>{place.name}</h3>
+      <p>Capacity: {place.capacity}</p>
+      <p>Area: {place.area}</p>
+    </div>
+  )
+}

@@ -3,11 +3,12 @@
 
 import { Routes, Route } from "react-router-dom"
 import Layout from "./components/Layout"
+
 import Explore from "./pages/Explore"
 import Events from "./pages/Events"
 import About from "./pages/About"
 
-function App() {
+export default function App() {
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
