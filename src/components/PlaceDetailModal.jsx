@@ -16,53 +16,79 @@
 // Request / Book
 // Host event here
 
-import { useNavigate } from "react-router-dom"
 
-export default function PlaceDetailModal({ place, onClose }) {
-  const navigate = useNavigate()
+import { useNavigate } from "react-router-dom";
+import { events } from "../data/events_full";
+import { mapping } from "../data/mapping";
+
+import "./PlaceDetailModal.css";
+
+export default function PlaceDetailModal({ data, onClose }) {
+  const navigate = useNavigate();
+
+  if (!data) return null;
+
+  // 🔥 找关联 events
+  const relatedEvents = mapping
+    .filter((m) => String(m.place_id) === String(data.place_id))
+    .map((m) =>
+      events.find((e) => String(e.event_id) === String(m.event_id))
+    )
+    .filter(Boolean);
 
   return (
-    <div style={{
-      position: "fixed",
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      background: "rgba(0,0,0,0.5)",
-      zIndex: 9999
-    }}>
-      <div style={{
-        background: "white",
-        padding: "20px",
-        margin: "80px auto",
-        width: "400px"
-      }}>
-        <h2>{place.name}</h2>
+    <div className="modal-overlay">
+      <div className="modal">
 
-        <p>Capacity: {place.capacity}</p>
-        <p>Area: {place.area}</p>
+        <button className="modal-close" onClick={onClose}>
+          ✕
+        </button>
 
-        <h3>Upcoming Events</h3>
-        {place.events?.map(e => (
-          <p key={e.id}>• {e.title}</p>
-        ))}
+        <h2>{data.card_name || "Unnamed place"}</h2>
 
-        <hr />
+        <p><strong>Type:</strong> {data.card_type || "Unknown"}</p>
+        <p><strong>Postcode:</strong> {data.meta?.card_postcode || "Unavailable"}</p>
+        <p><strong>Access:</strong> {data.meta?.publicness_level || "Unknown"}</p>
+        <p><strong>Food share:</strong> {data.meta?.food_share_level || "Unknown"}</p>
 
-        <div style={{ display: "flex", gap: "10px" }}>
-          <button>Request Space</button>
+        {/* 🔥 events section */}
+        <div className="modal-events">
+          <h3>Events here</h3>
 
-          {/* ⭐关键 */}
-          <button
-            onClick={() => navigate(`/places/${place.id}`)}
-          >
-            View Full Details
-          </button>
+          {relatedEvents.length === 0 ? (
+            <p className="no-events">No events yet</p>
+          ) : (
+            relatedEvents.map((e) => (
+              <div key={e.event_id} className="event-item">
+                <p className="event-title">{e.title}</p>
+                <p className="event-time">{e.start_time || "TBC"}</p>
+
+                <button
+                  onClick={() => {
+                    onClose();
+                    navigate(`/events/${e.event_id}`, {
+                      state: { from: "explore", mode: "event" },
+                    });
+                  }}
+                >
+                  View
+                </button>
+              </div>
+            ))
+          )}
         </div>
 
-        <br />
-        <button onClick={onClose}>Close</button>
+        <button
+          className="modal-main-btn"
+          onClick={() => {
+            onClose();
+            navigate(`/places/${data.place_id}`);
+          }}
+        >
+          View full details
+        </button>
+
       </div>
     </div>
-  )
+  );
 }

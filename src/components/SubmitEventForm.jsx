@@ -2,8 +2,9 @@
 // 被 Events.jsx 使用
 import { useState } from 'react'
 import './SubmitEventForm.css'
+import { places } from '../data/places_full'
 
-export default function SubmitEventForm({ onAddEvent }) {
+export default function SubmitEventForm({ onAddEvent, placeId }) {
   const [formData, setFormData] = useState({
     title: '',
     type: 'Workshop',
@@ -11,6 +12,7 @@ export default function SubmitEventForm({ onAddEvent }) {
     date: '',
     time: '',
     maxGuests: '',
+    place_id: placeId || '', // ✅ 默认带入
   })
 
   function handleChange(e) {
@@ -32,13 +34,12 @@ export default function SubmitEventForm({ onAddEvent }) {
 
     const newEvent = {
       id: Date.now(),
+      event_id: Date.now(), // ✅ 和你原数据结构兼容
       title: formData.title,
-      category: formData.type,
-      date: formData.date,
+      event_category: formData.type,
+      start_time: formData.date,
       description: formData.description,
-      image:
-        'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80',
-      buttonText: 'View Details',
+      place_id: formData.place_id, // ✅ 关键
     }
 
     onAddEvent(newEvent)
@@ -52,6 +53,7 @@ export default function SubmitEventForm({ onAddEvent }) {
       date: '',
       time: '',
       maxGuests: '',
+      place_id: placeId || '',
     })
   }
 
@@ -63,12 +65,14 @@ export default function SubmitEventForm({ onAddEvent }) {
       date: '',
       time: '',
       maxGuests: '',
+      place_id: placeId || '',
     })
   }
 
   return (
     <form className="content-card submit-event-form" onSubmit={handleSubmit}>
       <div className="submit-event-grid">
+
         <div className="submit-event-field">
           <label className="submit-event-label">Event Title</label>
           <input
@@ -77,7 +81,6 @@ export default function SubmitEventForm({ onAddEvent }) {
             name="title"
             value={formData.title}
             onChange={handleChange}
-            placeholder="e.g. Community Garden Harvest"
           />
         </div>
 
@@ -96,21 +99,39 @@ export default function SubmitEventForm({ onAddEvent }) {
           </select>
         </div>
 
+        {/* ✅ 只有没有传 placeId 才允许选 */}
+        {!placeId && (
+          <div className="submit-event-field">
+            <label className="submit-event-label">Location</label>
+            <select
+              className="submit-event-select"
+              name="place_id"
+              value={formData.place_id}
+              onChange={handleChange}
+            >
+              <option value="">Select a place</option>
+
+              {places.map((p) => (
+                <option key={p.place_id} value={p.place_id}>
+                  {p.card_name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
         <div className="submit-event-field submit-event-field-full">
-          <label className="submit-event-label">Description</label>
+          <label>Description</label>
           <textarea
-            className="submit-event-textarea"
             name="description"
             value={formData.description}
             onChange={handleChange}
-            placeholder="Describe the event goals and what participants should bring..."
           />
         </div>
 
         <div className="submit-event-field">
-          <label className="submit-event-label">Date</label>
+          <label>Date</label>
           <input
-            className="submit-event-input"
             type="date"
             name="date"
             value={formData.date}
@@ -119,35 +140,18 @@ export default function SubmitEventForm({ onAddEvent }) {
         </div>
 
         <div className="submit-event-field">
-          <label className="submit-event-label">Start Time</label>
+          <label>Time</label>
           <input
-            className="submit-event-input"
             type="time"
             name="time"
             value={formData.time}
             onChange={handleChange}
           />
         </div>
-
-        <div className="submit-event-field">
-          <label className="submit-event-label">Max Guests</label>
-          <input
-            className="submit-event-input"
-            type="number"
-            name="maxGuests"
-            value={formData.maxGuests}
-            onChange={handleChange}
-            placeholder="25"
-          />
-        </div>
       </div>
 
       <div className="submit-event-actions">
-        <button
-          type="button"
-          className="submit-event-cancel"
-          onClick={handleCancel}
-        >
+        <button type="button" onClick={handleCancel}>
           Cancel
         </button>
 

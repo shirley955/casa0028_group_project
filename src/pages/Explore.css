@@ -1,0 +1,333 @@
+/* =========================
+   HERO FULLSCREEN
+========================= */
+
+.explore-page.landing .explore-hero {
+  position: fixed;   
+  inset: 0;          /* = top:0 left:0 right:0 bottom:0 */
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 999;      /* 盖住 navbar */
+
+  background: #f9faf8;
+}
+
+/* 收起动画 */
+.explore-page.entered .explore-hero {
+  position: relative;
+  height: auto;
+  padding: 80px 24px 40px;
+
+  transform: scale(1);      
+  opacity: 1;
+
+  background: none;
+
+  display: flex;
+  justify-content: center;       /* 保持居中 */
+}
+
+/* =========================
+   HERO INNER（核心容器）
+========================= */
+
+.explore-hero-inner {
+  opacity: 0;
+  transform: translateY(8px);
+
+  transition: all 0.8s ease;
+}
+
+/* ⭐ 页面加载后 */
+.explore-hero-inner.loaded {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* landing 状态 */
+.explore-hero-inner {
+  max-width: 760px;
+  width: 100%;
+  padding: 0 24px;
+
+  text-align: center;
+}
+
+/* entered 状态 */
+.explore-page.entered .explore-hero-inner {
+  text-align: center;            /* 防止左对齐 */
+  max-width: 900px;
+}
+
+/* =========================
+   TEXT
+========================= */
+
+.explore-eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: #888;
+  margin-bottom: 16px;
+
+  text-align: center;            /* 强制居中 */
+}
+
+.explore-title {
+  font-size: 64px;
+  font-weight: 800;
+  line-height: 0.95;
+  margin-bottom: 18px;
+
+  text-align: center;        
+}
+
+.explore-subtitle {
+  font-size: 16px;
+  color: #666;
+  line-height: 1.7;
+
+  max-width: 560px;
+  margin: 0 auto;                /* 防止一整行太宽 */
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+/* =========================
+   START BUTTON（延迟出现）
+========================= */
+.hero-start-btn {
+  opacity: 0;
+  transform: translateY(10px) scale(0.96);
+
+  transition: all 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ⭐ 出现状态 */
+.hero-start-btn.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.hero-start-btn {
+  position: relative;
+
+  padding: 14px 32px;
+  border-radius: 999px;
+
+  background: var(--primary);
+  color: white;
+
+  font-weight: 700;
+  cursor: pointer;
+
+  border: none;        /* ⭐ 去白边 */
+  outline: none;       /* ⭐ 去 focus 边框 */
+  box-shadow: none;    /* ⭐ 去假边框 */
+
+  z-index: 1;
+}
+
+/* 第一圈（脉冲） */
+.hero-start-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  border-radius: 999px;
+  border: 1.5px solid var(--primary);
+
+  opacity: 0.4;
+
+  animation: pulse-ring 2.4s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+/* 第二圈 */
+.hero-start-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  border-radius: 999px;
+  border: 1.5px solid var(--primary);
+
+  opacity: 0.4;
+
+  animation: pulse-ring 2.4s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  animation-delay: 1.2s;
+}
+
+/* 动画 */
+@keyframes pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.35;
+  }
+  70% {
+    transform: scale(1.25);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.25);
+    opacity: 0;
+  }
+}
+
+@keyframes fadeInBtn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================
+   CONTENT
+========================= */
+
+.explore-content {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s ease;
+}
+
+.explore-page.entered .explore-content {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* =========================
+   TOGGLE
+========================= */
+
+.toggle-bar {
+  margin: 20px 24px;
+  display: flex;
+  gap: 10px;
+}
+
+.toggle-bar button {
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: none;
+  background: #eee;
+}
+
+.toggle-bar .active {
+  background: #111;
+  color: white;
+}
+
+/* =========================
+   CARDS
+========================= */
+
+.explore-card-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 24px;
+  justify-content: space-between;
+}
+
+.explore-card-grid > * {
+  flex: 0 0 calc(25% - 12px);
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1024px) {
+  .explore-title {
+    font-size: 48px;
+  }
+
+  .explore-card-grid > * {
+    flex: 0 0 calc(50% - 12px);
+  }
+}
+
+@media (max-width: 640px) {
+  .explore-title {
+    font-size: 36px;
+  }
+
+  .explore-card-grid > * {
+    flex: 0 0 100%;
+  }
+}
+
+/* =========================
+   TOGGLE BUTTONS
+========================= */
+
+.explore-toggle {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 28px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.explore-chip {
+  border: none;
+  border-radius: 999px;
+  padding: 14px 28px;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1;
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.18s ease, opacity 0.18s ease, box-shadow 0.18s ease;
+  box-shadow: var(--shadow-ambient);
+}
+
+/* 第一个按钮：Explore All Events（绿色） */
+.explore-toggle .explore-chip:last-child {
+  background: linear-gradient(135deg, #012d1d 0%, #0c4a2f 100%);
+}
+
+/* 第二个按钮：Submit Event（红色） */
+.explore-toggle .explore-chip:first-child {
+  background: linear-gradient(135deg, #8f1d2c 0%, #b3263d 100%);
+}
+
+.explore-chip:hover {
+  transform: translateY(-1px);
+  opacity: 0.96;
+}
+
+.explore-chip:active {
+  transform: translateY(0);
+}
+
+/* 当前选中态：只做强调，不改颜色逻辑 */
+.explore-chip-active {
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 255, 0.7),
+    var(--shadow-ambient);
+}
+
+/* 小屏 */
+@media (max-width: 640px) {
+  .explore-toggle {
+    gap: 12px;
+  }
+
+  .explore-chip {
+    width: 100%;
+    max-width: 260px;
+    justify-content: center;
+  }
+}
+
+.explore-map-hint {
+  text-align: center;
+  font-size: 13px;
+  color: var(--on-surface-variant);
+  margin-bottom: 12px;
+  letter-spacing: 0.02em;
+}

@@ -4,44 +4,14 @@
 import { useState } from 'react'
 import EventCard from '../components/EventCard.jsx'
 import SubmitEventForm from '../components/SubmitEventForm.jsx'
+import { events as realEvents } from '../data/events_full'
 import './Events.css'
 
 export default function Events() {
-  const [events, setEvents] = useState([
-    {
-      id: 1,
-      title: 'Mastering Seasonal Fermentation',
-      category: 'Workshop',
-      date: 'MAR 12',
-      description:
-        'Learn the ancient art of pickling and fermentation with chef Elena. All materials provided.',
-      image:
-        'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=800&q=80',
-      buttonText: 'Join Event',
-    },
-    {
-      id: 2,
-      title: 'Weekend Food Distribution',
-      category: 'Volunteer',
-      date: 'MAR 15',
-      description:
-        'Help us pack and distribute grocery bags to local families in need this Saturday.',
-      image:
-        'https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=800&q=80',
-      buttonText: 'Volunteer Now',
-    },
-    {
-      id: 3,
-      title: 'Spring Community Potluck',
-      category: 'Food Drive',
-      date: 'MAR 20',
-      description:
-        'Bring a dish to share and meet your neighbors. Music and beverages provided by GatherHub.',
-      image:
-        'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=800&q=80',
-      buttonText: 'View Details',
-    },
-  ])
+  const [showForm, setShowForm] = useState(false)
+
+  // 🔥 用真实数据初始化
+  const [events, setEvents] = useState(realEvents || [])
 
   const [activeFilter, setActiveFilter] = useState('All Events')
 
@@ -49,11 +19,16 @@ export default function Events() {
     setEvents((prevEvents) => [newEvent, ...prevEvents])
   }
 
+  // 🔥 自动生成 filter（基于真实数据）
+  const types = [
+    'All Events',
+    ...new Set(events.map((e) => e.event_category).filter(Boolean)),
+  ]
+
+  // 🔥 filter逻辑（对齐 event_category）
   const filteredEvents = events.filter((event) => {
     if (activeFilter === 'All Events') return true
-    if (activeFilter === 'Workshops') return event.category === 'Workshop'
-    if (activeFilter === 'Food Drives') return event.category === 'Food Drive'
-    return true
+    return event.event_category === activeFilter
   })
 
   function scrollToSection(sectionId) {
@@ -64,12 +39,16 @@ export default function Events() {
 
   return (
     <main className="events-page">
+
+      {/* HERO */}
       <section className="events-hero">
         <div className="events-hero-text">
           <p className="events-eyebrow">Community First</p>
+
           <h1 className="events-title">
             Nourishing Our Neighborhood Through Shared Events.
           </h1>
+
           <p className="events-subtitle">
             Join a movement of local kitchens and volunteers dedicated to food
             security. From workshops to community dinners, find your place at
@@ -85,10 +64,11 @@ export default function Events() {
               Explore All Events
             </button>
 
+            {/* 弹窗 */}
             <button
               className="btn-secondary"
               type="button"
-              onClick={() => scrollToSection('submit-event')}
+              onClick={() => setShowForm(true)}
             >
               Submit Event
             </button>
@@ -101,6 +81,7 @@ export default function Events() {
             alt="Community kitchen"
             className="events-hero-image"
           />
+
           <div className="events-impact-badge">
             <strong>1.2k+</strong>
             <span>Meals shared this month through local workshops</span>
@@ -108,55 +89,45 @@ export default function Events() {
         </div>
       </section>
 
+      {/* LIST */}
       <section id="events-list" className="events-list-section page-section">
         <div className="events-section-header">
           <div>
             <h2>Upcoming Gatherings</h2>
 
+            {/* 动态 filter */}
             <div className="events-filter-row">
-              <button
-                type="button"
-                className={`events-chip ${
-                  activeFilter === 'All Events' ? 'events-chip-active' : ''
-                }`}
-                onClick={() => setActiveFilter('All Events')}
-              >
-                All Events
-              </button>
-
-              <button
-                type="button"
-                className={`events-chip ${
-                  activeFilter === 'Workshops' ? 'events-chip-active' : ''
-                }`}
-                onClick={() => setActiveFilter('Workshops')}
-              >
-                Workshops
-              </button>
-
-              <button
-                type="button"
-                className={`events-chip ${
-                  activeFilter === 'Food Drives' ? 'events-chip-active' : ''
-                }`}
-                onClick={() => setActiveFilter('Food Drives')}
-              >
-                Food Drives
-              </button>
+              {types.map((type) => (
+                <button
+                  key={type}
+                  type="button"
+                  className={`events-chip ${
+                    activeFilter === type ? 'events-chip-active' : ''
+                  }`}
+                  onClick={() => setActiveFilter(type)}
+                >
+                  {type}
+                </button>
+              ))}
             </div>
           </div>
         </div>
 
         <div className="events-grid">
           {filteredEvents.map((event) => (
-            <EventCard key={event.id} event={event} />
+            <EventCard
+              key={event.event_id}
+              data={event}
+            />
           ))}
         </div>
       </section>
 
+      {/* CALLOUT */}
       <section className="events-callout page-section">
         <div className="events-callout-text">
           <h2>Can’t find what you’re looking for?</h2>
+
           <p>
             Organize your own community event or kitchen takeover. We provide
             the tools and platform to help you get started.
@@ -166,7 +137,7 @@ export default function Events() {
             <button
               className="btn-secondary"
               type="button"
-              onClick={() => scrollToSection('submit-event')}
+              onClick={() => setShowForm(true)}
             >
               Publish Event
             </button>
@@ -184,9 +155,11 @@ export default function Events() {
         </div>
       </section>
 
+      {/* 保留但先不用 */}
       <section id="submit-event" className="events-submit-section">
         <div className="events-submit-header">
           <h2>Submit New Event</h2>
+
           <p className="text-muted">
             Share a workshop, meal, or volunteer opportunity with the community.
           </p>
@@ -194,6 +167,22 @@ export default function Events() {
 
         <SubmitEventForm onAddEvent={handleAddEvent} />
       </section>
+
+      {/* 弹窗 */}
+      {showForm && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <button onClick={() => setShowForm(false)}>✕</button>
+
+            <SubmitEventForm
+              onAddEvent={(e) => {
+                handleAddEvent(e)
+                setShowForm(false)
+              }}
+            />
+          </div>
+        </div>
+      )}
     </main>
   )
 }
