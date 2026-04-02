@@ -1,0 +1,5 @@
+.layout-content {
+  padding: var(--space-6) var(--space-8);
+  max-width: 1200px;
+  margin: 0 auto;
+}
