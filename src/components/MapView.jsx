@@ -59,7 +59,7 @@ export default function MapView({ places, onSelectPlace }) {
     <div
       ref={mapContainer}
       style={{
-        height: "400px",
+        height: "600px",
         width: "100%",
         margin: "20px 0"
       }}
