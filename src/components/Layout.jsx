@@ -1,13 +1,14 @@
-import Navbar from "./Navbar"
-import { Outlet } from "react-router-dom"
+import Navbar from "./Navbar";
+import { Outlet } from "react-router-dom";
+import "./Layout.css";
 
 export default function Layout() {
   return (
     <>
       <Navbar />
-      <div style={{ padding: "20px" }}>
+      <main className="layout-content">
         <Outlet />
-      </div>
+      </main>
     </>
-  )
+  );
 }
