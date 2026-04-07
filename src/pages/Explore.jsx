@@ -85,15 +85,15 @@ export default function Explore() {
     <div className={`explore-page ${entered ? "entered" : "landing"}`}>
       <div className="explore-hero">
         <div className={`explore-hero-inner ${textVisible ? "loaded" : ""}`}>
-          <p className="explore-eyebrow">COMMUNITY FIRST</p>
+          <p className="explore-eyebrow">LINKING EVENTS AND PLACES</p>
 
           <h1 className="explore-title">
-            Discover Spaces <br />
-            And Events Near You
+            Food, spaces, and events <br />
+            that bring people together
           </h1>
 
           <p className="explore-subtitle">
-            Explore community kitchens, shared spaces and local events across the city.
+            Find shared kitchens, community venues, and food-led activities that support local connection.
           </p>
 
           {!entered && (
@@ -101,7 +101,7 @@ export default function Explore() {
               className={`hero-start-btn ${showButton ? "show" : ""}`}
               onClick={handleEnter}
             >
-              Start Exploring
+              Enter GatherHub
             </button>
           )}
         </div>

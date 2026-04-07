@@ -224,6 +224,6 @@
 
 .modal-actions {
   display: flex;
-  gap: 12px;          /* ✅ 两个按钮之间的间距 */
-  margin-top: 20px;   /* ✅ 和上面内容拉开一点 */
+  gap: 12px;         
+  margin-top: 20px;  
 }

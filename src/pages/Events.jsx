@@ -57,7 +57,7 @@ export default function Events() {
           <h1 className="events-title">Nourishing Our Neighborhood Through Shared Events.</h1>
 
           <p className="events-subtitle">
-            Browse food-led workshops, supper clubs, and shared meals linked to real community venues. Each event can be traced back to a physical space so users can compare what is happening and where it takes place.
+            Explore food-related events across the city, with venue links where available to help you understand the spaces behind them.
           </p>
 
           <div className="events-hero-actions">

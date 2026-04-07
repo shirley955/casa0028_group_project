@@ -13,12 +13,12 @@ export default function About() {
         </div>
 
         <div className="content-card about-hero-card">
-          <h3>What you can do here</h3>
+          <h3>What the platform supports</h3>
           <ul className="about-list">
-            <li>Browse community venues with map-based exploration.</li>
-            <li>Compare food-related events and see where they are hosted.</li>
-            <li>Open venue detail pages before deciding where to go or what to organise.</li>
-            <li>Submit a new event and link it to a real place in the platform.</li>
+            <li>Find shared kitchens, halls, and community venues that can support food-related activities.</li>
+            <li>Browse local events and see which spaces they are connected to.</li>
+            <li>Compare places not only by location, but also by how they may support gathering and participation.</li>
+            <li>Add new events to strengthen the link between community activity and real spaces.</li>
           </ul>
         </div>
       </section>
@@ -27,14 +27,14 @@ export default function About() {
         <article className="content-card about-card">
           <h3>Why this matters</h3>
           <p>
-            Community kitchens, church halls, centres, and shared spaces often hold important local activity, but the information is fragmented across different platforms. GatherHub makes those resources easier to find and compare.
+            Shared kitchens, church halls, and community centres are more than venues. They can support everyday food practices, hosting, and social connection. But when information about these places and their events is hard to find, opportunities for participation and local belonging are easy to miss.
           </p>
         </article>
 
         <article className="content-card about-card">
           <h3>How spaces and events connect</h3>
           <p>
-            Events are not shown as isolated listings. Each one is linked back to a venue, so users can understand both what is happening and where it takes place.
+            Events do not happen in isolation. The venue shapes what kind of gathering is possible, who can access it, and how people experience it. By linking events back to real places, GatherHub helps users make better decisions about where to go, what to join, and what to organise.
           </p>
           <div className="about-flow">
             <span className="about-flow-chip">Explore spaces</span>
@@ -46,14 +46,14 @@ export default function About() {
         <article className="content-card about-card">
           <h3>Designed for users</h3>
           <p>
-            The interface is designed for residents looking for meals and workshops, organisers comparing spaces, and local groups who want a clearer route from venue discovery to event planning.
+            The platform is designed for people seeking to take part in food-related activities, organisers identifying appropriate venues, and community groups linking events to spaces. It supports both participation and spatial understanding of local activity, acknowledging that these connections are not always fully visible in existing data.
           </p>
         </article>
 
         <article className="content-card about-card">
           <h3>What the current prototype focuses on</h3>
           <p>
-            This final version prioritises food-led community activity. The events page now highlights cooking classes, supper clubs, and shared meals that better match the wider GatherHub theme.
+            This prototype focuses on food-led community activity, especially shared meals, workshops, and small gatherings that can be linked to existing venues. Rather than covering every type of local event, it concentrates on cases where food, space, and participation are closely connected. The current state of this prototype highlights both the potential and the limitations of linking community events to physical spaces, reflecting the fragmented nature of real-world data.
           </p>
         </article>
       </section>
