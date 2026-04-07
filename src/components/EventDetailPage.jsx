@@ -1,5 +1,5 @@
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { events } from '../data/events_full'
 import { getEventDateLabel, getEventLocation, getEventShortDescription } from '../utils/eventUtils'
 import './DetailPages.css'
@@ -20,6 +20,10 @@ export default function EventDetailPage() {
     notes: '',
   })
   const [submitted, setSubmitted] = useState(false)
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+  }, [id])
 
   if (!event) {
     return (
@@ -74,7 +78,11 @@ export default function EventDetailPage() {
 
         <div className="detail-actions" style={{ marginTop: '24px' }}>
           {eventLocation.placeId && (
-            <button className="btn-primary" type="button" onClick={() => navigate(`/places/${eventLocation.placeId}`)}>
+            <button
+              className="btn-primary"
+              type="button"
+              onClick={() => navigate(`/places/${eventLocation.placeId}`)}
+            >
               View venue details
             </button>
           )}

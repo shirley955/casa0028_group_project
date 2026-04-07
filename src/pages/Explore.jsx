@@ -1,6 +1,3 @@
-// 探索页面，包含map等组建，作为主要使用功能界面。用到地点位置与地点信息等数据
-// 主页面（地图 + 筛选 + place列表）
-// 是整个项目核心
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import MapView from "../components/MapView";
@@ -19,28 +16,32 @@ import "./Explore.css";
 export default function Explore() {
   const location = useLocation();
 
-  // ⭐ 是否已经进入（只在当前 session 有效）
   const [entered, setEntered] = useState(
     sessionStorage.getItem("explore_seen") === "true"
   );
 
-  // ⭐ 控制按钮延迟出现
   const [showButton, setShowButton] = useState(false);
-
   const [textVisible, setTextVisible] = useState(false);
 
   useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, []);
+
+  useEffect(() => {
     if (!entered) {
-      // 第一次进入：动画
-      setTimeout(() => {
+      const textTimer = setTimeout(() => {
         setTextVisible(true);
       }, 200);
 
-      setTimeout(() => {
+      const buttonTimer = setTimeout(() => {
         setShowButton(true);
       }, 1000);
+
+      return () => {
+        clearTimeout(textTimer);
+        clearTimeout(buttonTimer);
+      };
     } else {
-      // ⭐ 关键：返回页面时，直接显示文字
       setTextVisible(true);
       setShowButton(false);
     }
@@ -49,17 +50,14 @@ export default function Explore() {
   const handleEnter = () => {
     setEntered(true);
     sessionStorage.setItem("explore_seen", "true");
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   };
-
-  // ---------- 原逻辑 ----------
-
 
   const [userLocation, setUserLocation] = useState(null);
   const [mode, setMode] = useState(location.state?.mode || "place");
   const [selected, setSelected] = useState(null);
   const [filters, setFilters] = useState({});
   const [mapCenter, setMapCenter] = useState([-0.1, 51.5]);
-
 
   const safeEvents = events?.filter(Boolean) || [];
   const safePlaces = places?.filter(Boolean) || [];
@@ -72,16 +70,20 @@ export default function Explore() {
     filters.type ? p.card_type === filters.type : true
   );
 
-  const visibleEvents = filteredEvents.slice(0, 6);
-  const visiblePlaces = filteredPlaces.slice(0, 8);
+  const [visibleItems, setVisibleItems] = useState([]);
+
+  useEffect(() => {
+    setVisibleItems([]);
+  }, [mode, filters]);
+
+  const displayItems = visibleItems.filter((item) =>
+    mode === "event" ? item?.event_id : item?.place_id
+  );
 
   return (
     <div className={`explore-page ${entered ? "entered" : "landing"}`}>
-
-      {/* ⭐ HERO */}
       <div className="explore-hero">
         <div className={`explore-hero-inner ${textVisible ? "loaded" : ""}`}>
-
           <p className="explore-eyebrow">COMMUNITY FIRST</p>
 
           <h1 className="explore-title">
@@ -104,83 +106,91 @@ export default function Explore() {
         </div>
       </div>
 
-      {/* 主内容 */}
       <div className="explore-content">
-      {/* ⭐ 新增 wrapper（只包这四个） */}
-      <div className="explore-map-section">
+        <div className="explore-main-wrap">
+          <div className="explore-map-section">
+            <div className="explore-toggle">
+              <button
+                className={`explore-chip ${
+                  mode === "event" ? "explore-chip-active" : ""
+                }`}
+                onClick={() => {
+                  setMode("event");
+                  setSelected(null);
+                  setFilters({});
+                }}
+              >
+                Events
+              </button>
 
+              <button
+                className={`explore-chip ${
+                  mode === "place" ? "explore-chip-active" : ""
+                }`}
+                onClick={() => {
+                  setMode("place");
+                  setSelected(null);
+                  setFilters({});
+                }}
+              >
+                Places
+              </button>
+            </div>
 
-        {/* 提示文字 */}
-        <div className="explore-map-hint">
-          Click on map points to view details
+            <div className="explore-filter-bar">
+              <MapFilters
+                mode={mode}
+                filters={filters}
+                setFilters={setFilters}
+                setMapCenter={setMapCenter}
+                events={safeEvents}
+                places={safePlaces}
+                setUserLocation={setUserLocation}
+              />
+            </div>
+
+            <MapView
+              mode={mode}
+              events={filteredEvents}
+              places={filteredPlaces}
+              setSelected={setSelected}
+              mapCenter={mapCenter}
+              userLocation={userLocation}
+              setVisibleItems={setVisibleItems}
+            />
+          </div>
+
+          <div className="explore-results-head">
+            <div>
+              <p className="explore-results-eyebrow">
+                {mode === "event" ? "EVENT RESULTS" : "PLACE RESULTS"}
+              </p>
+              <h2 className="explore-results-title">
+                {mode === "event" ? "Events on the map" : "Places on the map"}
+              </h2>
+            </div>
+
+            <p className="explore-results-copy">
+              {mode === "event"
+                ? "These cards match the events currently visible in the selected mode."
+                : "These cards match the places currently visible in the selected mode."}
+            </p>
+          </div>
+
+          <div className="explore-card-wrap">
+            <div className="explore-card-grid">
+              {displayItems.map((item) =>
+                mode === "event" ? (
+                  <EventCard key={item.event_id} data={item} onClick={setSelected} />
+                ) : (
+                  <PlaceCard key={item.place_id} data={item} onClick={setSelected} />
+                )
+              )}
+            </div>
+          </div>
         </div>
-
-        <div className="explore-toggle">
-          <button
-            className={`explore-chip ${
-              mode === "event" ? "explore-chip-active" : ""
-            }`}
-            onClick={() => {
-              setMode("event");
-              setSelected(null);
-              setFilters({});
-            }}
-          >
-            Explore Events
-          </button>
-
-          <button
-            className={`explore-chip ${
-              mode === "place" ? "explore-chip-active" : ""
-            }`}
-            onClick={() => {
-              setMode("place");
-              setSelected(null);
-              setFilters({});
-            }}
-          >
-            Explore Places
-          </button>
-        </div>
-
-
-
-        <div className="explore-filter-bar">
-
-        <MapFilters
-          mode={mode}
-          filters={filters}
-          setFilters={setFilters}
-          setMapCenter={setMapCenter}
-          events={safeEvents}
-          places={safePlaces}
-          setUserLocation={setUserLocation}
-        />
-        </div>
-
-        <MapView
-          mode={mode}
-          events={filteredEvents}
-          places={filteredPlaces}
-          setSelected={setSelected}
-          mapCenter={mapCenter}
-          userLocation={userLocation}
-        />
-      </div> 
-
-        <div className="explore-card-grid">
-          {mode === "event"
-            ? visibleEvents.map((e) => (
-                <EventCard key={e.event_id} data={e} onClick={setSelected} />
-              ))
-            : visiblePlaces.map((p) => (
-                <PlaceCard key={p.place_id} data={p} onClick={setSelected} />
-              ))}
-        </div>
-
       </div>
 
-      {/* modal */}
       {selected && mode === "event" && (
         <EventDetailModal data={selected} onClose={() => setSelected(null)} />
       )}

@@ -16,6 +16,7 @@ export default function MapView({
   setSelected,
   mapCenter,
   userLocation,
+  setVisibleItems
 }) {
   const [viewState, setViewState] = useState({
     longitude: mapCenter[0],
@@ -24,6 +25,7 @@ export default function MapView({
   });
 
   const mapRef = useRef(null);
+  
 
   const [popupInfo, setPopupInfo] = useState(null);
 
@@ -36,47 +38,86 @@ export default function MapView({
       zoom: 13,
     });
   }, [mapCenter]);
+  
 
+  /* ⭐ 先定义 data */
   const data = mode === "event" ? (events || []) : (places || []);
+
+
+
+  const getCoords = (d) => {
+    let lng, lat;
+
+    if (mode === "event") {
+      if (!d.coords) return null;
+
+      if (typeof d.coords === "string") {
+        try {
+          const parsed = JSON.parse(d.coords);
+          lng = parsed[0];
+          lat = parsed[1];
+        } catch {
+          return null;
+        }
+      } else if (Array.isArray(d.coords)) {
+        lng = d.coords[0];
+        lat = d.coords[1];
+      } else {
+        return null;
+      }
+    } else {
+      lng = d.longitude;
+      lat = d.latitude;
+    }
+
+    if (
+      typeof lng !== "number" ||
+      typeof lat !== "number" ||
+      Number.isNaN(lng) ||
+      Number.isNaN(lat)
+    ) {
+      return null;
+    }
+
+    return [lng, lat];
+  };
+
+  const updateVisibleItems = () => {
+    if (!mapRef.current || !setVisibleItems) return;
+
+    const map = mapRef.current.getMap();
+    const bounds = map.getBounds();
+
+    const inView = data.filter((d) => {
+      const coords = getCoords(d);
+      if (!coords) return false;
+
+      const [lng, lat] = coords;
+
+      return (
+        lng >= bounds.getWest() &&
+        lng <= bounds.getEast() &&
+        lat >= bounds.getSouth() &&
+        lat <= bounds.getNorth()
+      );
+    });
+
+    setVisibleItems(inView);
+  };
+
+  useEffect(() => {
+    if (!mapRef.current) return;
+    updateVisibleItems();
+  }, [mode, data]);
+
 
   const geojson = useMemo(() => {
     const features = data
       .map((d) => {
-        let lng, lat;
+        const coords = getCoords(d);
+        if (!coords) return null;
 
-        if (mode === "event") {
-          // 🔥 event: coords 是 string → parse
-          if (!d.coords) return null;
-
-          if (typeof d.coords === "string") {
-            try {
-              const parsed = JSON.parse(d.coords);
-              lng = parsed[0];
-              lat = parsed[1];
-            } catch {
-              return null;
-            }
-          } else if (Array.isArray(d.coords)) {
-            lng = d.coords[0];
-            lat = d.coords[1];
-          } else {
-            return null;
-          }
-        } else {
-          // 🔥 place: 直接用 lat/lng
-          lng = d.longitude;
-          lat = d.latitude;
-        }
-
-        // 🔥 防止坏数据
-        if (
-          typeof lng !== "number" ||
-          typeof lat !== "number" ||
-          Number.isNaN(lng) ||
-          Number.isNaN(lat)
-        ) {
-          return null;
-        }
+        const [lng, lat] = coords;
 
         return {
           type: "Feature",
@@ -127,6 +168,8 @@ export default function MapView({
     [mode]
   );
 
+  
+
   const handleMapClick = (event) => {
     const feature = event.features?.[0];
     if (!feature) return;
@@ -151,6 +194,19 @@ export default function MapView({
         ref={mapRef}
         {...viewState}
         onMove={(evt) => setViewState(evt.viewState)}
+        onMoveEnd={() => updateVisibleItems()}
+        // 在 MapView.jsx 中修改 <Map> 的 onLoad 属性：
+        onLoad={() => {
+          updateVisibleItems();
+
+          const map = mapRef.current?.getMap();
+          if (map) {
+            // ✅ 使用 requestAnimationFrame 替代 setTimeout
+            requestAnimationFrame(() => {
+              map.resize();
+            });
+          }
+        }}
         onClick={handleMapClick}
         interactiveLayerIds={["points-layer"]}
         style={{ width: "100%", height: "100%" }}

@@ -1,4 +1,4 @@
-.event-card {
+.place-card {
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -6,26 +6,44 @@
   cursor: pointer;
   height: auto;
   min-height: 0;
+  background: var(--surface-container-lowest);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-ambient);
 }
 
-.event-card:hover {
+.place-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 24px 48px rgba(25, 28, 28, 0.08);
 }
 
-.event-card-image-wrap {
+.place-card-image-wrap {
   position: relative;
   width: 100%;
 }
 
-.event-card-image {
+.place-card-image {
   display: block;
   width: 100%;
   height: 220px;
   object-fit: cover;
 }
 
-.event-card-date {
+.place-card-image-placeholder {
+  width: 100%;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    linear-gradient(135deg, rgba(1, 45, 29, 0.06), rgba(1, 45, 29, 0.02));
+  color: var(--on-surface-variant);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.place-card-badge {
   position: absolute;
   top: 14px;
   left: 14px;
@@ -38,16 +56,16 @@
   letter-spacing: 0.04em;
 }
 
-.event-card-body {
+.place-card-body {
   display: flex;
   flex-direction: column;
   flex: 1;
   gap: 12px;
   padding: 22px;
-  min-height: 270px;
+  min-height: 250px;
 }
 
-.event-card-category {
+.place-card-category {
   margin: 0;
   color: var(--on-surface-variant);
   font-size: 11px;
@@ -56,7 +74,7 @@
   letter-spacing: 0.14em;
 }
 
-.event-card-body h3 {
+.place-card-body h3 {
   margin: 0;
   font-size: 26px;
   line-height: 1.18;
@@ -69,25 +87,22 @@
   min-height: 62px;
 }
 
-.event-card-description {
+.place-card-meta {
   margin: 0;
   font-size: 14px;
   line-height: 1.7;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  min-height: 72px;
+  color: var(--on-surface-variant);
+  min-height: 48px;
 }
 
-.event-card-location {
+.place-card-location {
   margin: 0;
   font-size: 13px;
   line-height: 1.5;
   color: var(--on-surface-variant);
 }
 
-.event-card-body .btn-primary {
+.place-card-body .btn-primary {
   align-self: flex-start;
   margin-top: auto;
 }

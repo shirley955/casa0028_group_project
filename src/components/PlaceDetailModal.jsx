@@ -16,7 +16,6 @@
 // Request / Book
 // Host event here
 
-
 import { useNavigate } from "react-router-dom";
 import { events } from "../data/events_full";
 import { mapping } from "../data/mapping";
@@ -28,7 +27,6 @@ export default function PlaceDetailModal({ data, onClose }) {
 
   if (!data) return null;
 
-  // 🔥 找关联 events
   const relatedEvents = mapping
     .filter((m) => String(m.place_id) === String(data.place_id))
     .map((m) =>
@@ -36,57 +34,105 @@ export default function PlaceDetailModal({ data, onClose }) {
     )
     .filter(Boolean);
 
+  const title =
+    data.card_name ||
+    data.card_type?.replace(/_/g, " ") ||
+    "Community space";
+
   return (
     <div className="modal-overlay">
-      <div className="modal">
+      <div className="place-modal">
 
-        <button className="modal-close" onClick={onClose}>
-          ✕
-        </button>
+        <button className="modal-close" onClick={onClose}>✕</button>
 
-        <h2>{data.card_name || "Unnamed place"}</h2>
+        {/* HEADER */}
+        <div className="place-modal-header">
+          <p className="place-modal-tag">
+            {data.card_type?.replace(/_/g, " ")}
+          </p>
+          <h2>{title}</h2>
+        </div>
 
-        <p><strong>Type:</strong> {data.card_type || "Unknown"}</p>
-        <p><strong>Postcode:</strong> {data.meta?.card_postcode || "Unavailable"}</p>
-        <p><strong>Access:</strong> {data.meta?.publicness_level || "Unknown"}</p>
-        <p><strong>Food share:</strong> {data.meta?.food_share_level || "Unknown"}</p>
+        {/* ⭐ IMAGE（新增核心） */}
+        <div className="place-modal-image">
+          {data.media?.[0]?.url ? (
+            <img src={data.media[0].url} alt={title} />
+          ) : (
+            <div className="placeholder">Image coming soon</div>
+          )}
+        </div>
 
-        {/* 🔥 events section */}
-        <div className="modal-events">
+        {/* ⭐ QUICK INFO */}
+        <div className="place-modal-grid">
+          <div className="place-modal-block">
+            <p className="label">Postcode</p>
+            <p>{data.meta?.card_postcode || "Unavailable"}</p>
+          </div>
+
+          <div className="place-modal-block">
+            <p className="label">Access</p>
+            <p>{data.meta?.publicness_level || "Unknown"}</p>
+          </div>
+
+          <div className="place-modal-block">
+            <p className="label">Capacity</p>
+            <p>{data.capacity || "Unknown"}</p>
+          </div>
+        </div>
+
+        {/* ⭐ FACILITIES（新增） */}
+        <div className="place-modal-section">
+          <h3>Facilities</h3>
+          {data.facilities?.length ? (
+            <div className="chips">
+              {data.facilities.map((f, i) => (
+                <span key={i} className="chip">{f}</span>
+              ))}
+            </div>
+          ) : (
+            <p className="muted">Not specified</p>
+          )}
+        </div>
+
+        {/* ⭐ EVENTS */}
+        <div className="place-modal-events">
           <h3>Events here</h3>
 
           {relatedEvents.length === 0 ? (
             <p className="no-events">No events yet</p>
           ) : (
-            relatedEvents.map((e) => (
+            relatedEvents.slice(0, 2).map((e) => (
               <div key={e.event_id} className="event-item">
                 <p className="event-title">{e.title}</p>
-                <p className="event-time">{e.start_time || "TBC"}</p>
-
-                <button
-                  onClick={() => {
-                    onClose();
-                    navigate(`/events/${e.event_id}`, {
-                      state: { from: "explore", mode: "event" },
-                    });
-                  }}
-                >
-                  View
-                </button>
               </div>
             ))
           )}
         </div>
 
-        <button
-          className="modal-main-btn"
-          onClick={() => {
-            onClose();
-            navigate(`/places/${data.place_id}`);
-          }}
-        >
-          View full details
-        </button>
+        {/* ⭐ CTA（关键） */}
+        <div className="modal-actions">
+          <button
+            className="btn-secondary"
+            onClick={() => {
+              onClose();
+              navigate(`/places/${data.place_id}`);
+            }}
+          >
+            View full details
+          </button>
+
+          <button
+            className="btn-primary"
+            onClick={() => {
+              onClose();
+              navigate(`/places/${data.place_id}`, {
+                state: { action: "host" },
+              });
+            }}
+          >
+            Host event here
+          </button>
+        </div>
 
       </div>
     </div>
