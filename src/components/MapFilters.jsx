@@ -76,45 +76,60 @@ export default function MapFilters({
   };
 
   return (
-    <div className="filters">
+    <div className="filters map-filters">
 
-      {/* 📍 定位 + postcode */}
-      <div className="filter-row">
-        <button onClick={handleLocate}>
-          📍 Find my location
-        </button>
+      {/* 🔍 搜索组 */}
+      <div className="filter-group">
+        <span className="filter-label">Find a Location</span>
 
-        <input
-          type="text"
-          placeholder="Enter postcode"
-          value={postcode}
-          onChange={(e) => setPostcode(e.target.value)}
-        />
+        <div className="filter-row map-filter-row">
+          <button className="map-btn-secondary" onClick={handleLocate}>
+            📍 Locate
+          </button>
 
-        <button onClick={handlePostcodeSearch}>
-          🔍 Search
-        </button>
+          <input
+            className="map-input"
+            type="text"
+            placeholder="Search by postcode"
+            value={postcode}
+            onChange={(e) => setPostcode(e.target.value)}
+          />
+
+          <button className="map-btn" onClick={handlePostcodeSearch}>
+            Search
+          </button>
+        </div>
       </div>
 
-      {/* 🎯 主筛选 */}
-      <div className="filter-row">
-        <select
-          value={filters.type || ""}
-          onChange={(e) =>
-            setFilters({
-              ...filters,
-              type: e.target.value || null,
-            })
-          }
-        >
-          <option value="">All</option>
+      {/* ⭐ 分隔线 */}
+      <div className="filter-divider" />
 
-          {types.map((t) => (
-            <option key={t} value={t}>
-              {t}
-            </option>
-          ))}
-        </select>
+      {/* 🎯 分类筛选 */}
+      <div className="filter-group">
+        <span className="filter-label">Category</span>
+
+        <div className="filter-row map-filter-row">
+          <div className="map-select-wrapper">
+            <select
+              className="map-select"
+              value={filters.type || ""}
+              onChange={(e) =>
+                setFilters({
+                  ...filters,
+                  type: e.target.value || null,
+                })
+              }
+            >
+              <option value="">All categories</option>
+
+              {types.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
       </div>
 
     </div>

@@ -31,15 +31,18 @@ export default function Explore() {
 
   useEffect(() => {
     if (!entered) {
-      // 文字先出现
+      // 第一次进入：动画
       setTimeout(() => {
         setTextVisible(true);
       }, 200);
 
-      // 按钮后出现
       setTimeout(() => {
         setShowButton(true);
       }, 1000);
+    } else {
+      // ⭐ 关键：返回页面时，直接显示文字
+      setTextVisible(true);
+      setShowButton(false);
     }
   }, [entered]);
 
@@ -103,6 +106,9 @@ export default function Explore() {
 
       {/* 主内容 */}
       <div className="explore-content">
+      {/* ⭐ 新增 wrapper（只包这四个） */}
+      <div className="explore-map-section">
+
 
         {/* 提示文字 */}
         <div className="explore-map-hint">
@@ -137,6 +143,10 @@ export default function Explore() {
           </button>
         </div>
 
+
+
+        <div className="explore-filter-bar">
+
         <MapFilters
           mode={mode}
           filters={filters}
@@ -146,6 +156,7 @@ export default function Explore() {
           places={safePlaces}
           setUserLocation={setUserLocation}
         />
+        </div>
 
         <MapView
           mode={mode}
@@ -155,6 +166,7 @@ export default function Explore() {
           mapCenter={mapCenter}
           userLocation={userLocation}
         />
+      </div> 
 
         <div className="explore-card-grid">
           {mode === "event"
