@@ -22,6 +22,7 @@ export default function Explore() {
 
   const [showButton, setShowButton] = useState(false);
   const [textVisible, setTextVisible] = useState(false);
+  const [hoveredId, setHoveredId] = useState(null);
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
@@ -157,6 +158,7 @@ export default function Explore() {
               mapCenter={mapCenter}
               userLocation={userLocation}
               setVisibleItems={setVisibleItems}
+              hoveredId={hoveredId} 
             />
           </div>
 
@@ -181,9 +183,9 @@ export default function Explore() {
             <div className="explore-card-grid">
               {displayItems.map((item) =>
                 mode === "event" ? (
-                  <EventCard key={item.event_id} data={item} onClick={setSelected} />
+                  <EventCard key={item.event_id} data={item} onClick={setSelected} onHover={setHoveredId}/>
                 ) : (
-                  <PlaceCard key={item.place_id} data={item} onClick={setSelected} />
+                  <PlaceCard key={item.place_id} data={item} onClick={setSelected} onHover={setHoveredId}/>
                 )
               )}
             </div>

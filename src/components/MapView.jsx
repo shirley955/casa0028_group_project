@@ -1,13 +1,7 @@
-// 地图容器（Leaflet）
-// 渲染地图 + markers
-// 被 Explore.jsx 使用
-
-
 import { useEffect, useMemo, useState } from "react";
 import { useRef } from "react";
 import Map, { Source, Layer, Popup } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
-
 
 export default function MapView({
   mode,
@@ -16,7 +10,8 @@ export default function MapView({
   setSelected,
   mapCenter,
   userLocation,
-  setVisibleItems
+  setVisibleItems,
+  hoveredId   // ⭐ 新增
 }) {
   const [viewState, setViewState] = useState({
     longitude: mapCenter[0],
@@ -25,8 +20,6 @@ export default function MapView({
   });
 
   const mapRef = useRef(null);
-  
-
   const [popupInfo, setPopupInfo] = useState(null);
 
   useEffect(() => {
@@ -38,12 +31,9 @@ export default function MapView({
       zoom: 13,
     });
   }, [mapCenter]);
-  
 
-  /* ⭐ 先定义 data */
+  /* ⭐ data */
   const data = mode === "event" ? (events || []) : (places || []);
-
-
 
   const getCoords = (d) => {
     let lng, lat;
@@ -110,6 +100,15 @@ export default function MapView({
     updateVisibleItems();
   }, [mode, data]);
 
+  // ⭐ 修复地图缩小（核心）
+  useEffect(() => {
+    if (!mapRef.current) return;
+
+    const map = mapRef.current.getMap();
+    requestAnimationFrame(() => {
+      map.resize();
+    });
+  }, [data, mode]);
 
   const geojson = useMemo(() => {
     const features = data
@@ -147,28 +146,94 @@ export default function MapView({
     };
   }, [data, mode]);
 
+  const haloLayer = useMemo(
+    () => ({
+      id: "points-halo",
+      type: "circle",
+      paint: {
+        "circle-radius": hoveredId
+          ? [
+              "case",
+              ["==", ["get", "id"], hoveredId],
+              30,   // ⭐ 光晕大小（可以调）
+              0,
+            ]
+          : 0,
+
+        "circle-color": "#ffcc00",
+
+        "circle-opacity": 0.3,
+        "circle-blur": 1.5,
+      },
+    }),
+    [hoveredId]
+  );
+
+  // ⭐ 高亮逻辑（只改这里）
   const circleLayer = useMemo(
     () => ({
       id: "points-layer",
       type: "circle",
       paint: {
-        "circle-radius": [
-          "interpolate",
-          ["linear"],
-          ["zoom"],
-          8, 3,
-          12, 4,
-          16, 6,
-        ],
-        "circle-color": mode === "event" ? "#b3263d" : "#0c4a2f",
-        "circle-stroke-width": 0.5,
+        "circle-radius": hoveredId
+          ? [
+              "case",
+              ["==", ["get", "id"], hoveredId],
+              26,   // ⭐ 更大（之前10不够）
+              [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                8, 3,
+                12, 4,
+                16, 6,
+              ],
+            ]
+          : [
+              "interpolate",
+              ["linear"],
+              ["zoom"],
+              8, 3,
+              12, 4,
+              16, 6,
+            ],
+
+        // ⭐ hover 改亮色（关键）
+        "circle-color": hoveredId
+          ? [
+              "case",
+              ["==", ["get", "id"], hoveredId],
+              "#ffcc00",   // ⭐ 高亮黄（非常明显）
+              mode === "event" ? "#b3263d" : "#0c4a2f",
+            ]
+          : (mode === "event" ? "#b3263d" : "#0c4a2f"),
+
+        // ⭐ 外圈更粗
+        "circle-stroke-width": hoveredId
+          ? [
+              "case",
+              ["==", ["get", "id"], hoveredId],
+              3,
+              0.5,
+            ]
+          : 0.5,
+
         "circle-stroke-color": "#ffffff",
+
+        // ⭐ 光晕（核心提升感知）
+        "circle-blur": hoveredId
+          ? [
+              "case",
+              ["==", ["get", "id"], hoveredId],
+              0.3,
+              0,
+            ]
+          : 0,
       },
     }),
-    [mode]
+    [mode, hoveredId]
   );
 
-  
 
   const handleMapClick = (event) => {
     const feature = event.features?.[0];
@@ -195,13 +260,11 @@ export default function MapView({
         {...viewState}
         onMove={(evt) => setViewState(evt.viewState)}
         onMoveEnd={() => updateVisibleItems()}
-        // 在 MapView.jsx 中修改 <Map> 的 onLoad 属性：
         onLoad={() => {
           updateVisibleItems();
 
           const map = mapRef.current?.getMap();
           if (map) {
-            // ✅ 使用 requestAnimationFrame 替代 setTimeout
             requestAnimationFrame(() => {
               map.resize();
             });
@@ -213,6 +276,10 @@ export default function MapView({
         mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
       >
         <Source id="points-source" type="geojson" data={geojson}>
+          {/* ⭐ 光晕层（必须在前面） */}
+          <Layer {...haloLayer} />
+
+          {/* 原来的点 */}
           <Layer {...circleLayer} />
         </Source>
 

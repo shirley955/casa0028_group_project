@@ -7,7 +7,7 @@ import {
   getEventShortDescription,
 } from '../utils/eventUtils'
 
-export default function EventCard({ data, onClick }) {
+export default function EventCard({ data, onClick, onHover }) {
   if (!data) return null
 
   const location = getEventLocation(data)
@@ -16,6 +16,11 @@ export default function EventCard({ data, onClick }) {
     <article
       className="content-card event-card"
       onClick={() => onClick?.(data)}
+
+      // ⭐ 新增 hover（唯一核心改动）
+      onMouseEnter={() => onHover?.(data.event_id)}
+      onMouseLeave={() => onHover?.(null)}
+
       role="button"
       tabIndex={0}
       onKeyDown={(event) => {
@@ -26,16 +31,26 @@ export default function EventCard({ data, onClick }) {
       }}
     >
       <div className="event-card-image-wrap">
-        <img className="event-card-image" src={getEventImage(data)} alt={data.title} />
-        <span className="event-card-date">{getEventDateLabel(data)}</span>
+        <img
+          className="event-card-image"
+          src={getEventImage(data)}
+          alt={data.title}
+        />
+        <span className="event-card-date">
+          {getEventDateLabel(data)}
+        </span>
       </div>
 
       <div className="event-card-body">
-        <p className="event-card-category">{getEventDisplayType(data)}</p>
+        <p className="event-card-category">
+          {getEventDisplayType(data)}
+        </p>
 
         <h3>{data.title}</h3>
 
-        <p className="text-muted event-card-description">{getEventShortDescription(data)}</p>
+        <p className="text-muted event-card-description">
+          {getEventShortDescription(data)}
+        </p>
 
         <p className="event-card-location">
           <strong>Hosted at:</strong> {location.name}
