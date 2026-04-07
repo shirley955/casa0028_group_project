@@ -1,90 +1,110 @@
-// Images、Full description、Facilities、Calendar / slots、Booking form、Host event
-
-// 最全的信息页面，
-// 可以在这个页面提交booking信息，或跳转官方的booking页面、跳转参加活动等等
-
-// 加一个可以添加place detail的提交form。。。可以upload照片之类的
-
-import { useParams, useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { places } from "../data/places_full";
-import { events } from "../data/events_full";
-import { mapping } from "../data/mapping";
+import { useNavigate, useParams } from 'react-router-dom'
+import { useMemo, useState } from 'react'
+import { places } from '../data/places_full'
+import { events } from '../data/events_full'
+import { mapping } from '../data/mapping'
+import SubmitEventForm from './SubmitEventForm'
+import PlaceEditForm from './PlaceEditForm'
+import './DetailPages.css'
 
 export default function PlaceDetailPage() {
-  const { id } = useParams();
-  const navigate = useNavigate();
+  const { id } = useParams()
+  const navigate = useNavigate()
+  const [showEditForm, setShowEditForm] = useState(false)
+  const [showEventForm, setShowEventForm] = useState(false)
 
-  const [showEditForm, setShowEditForm] = useState(false);
-  const [showEventForm, setShowEventForm] = useState(false);
+  const place = places.find((item) => String(item.place_id) === String(id))
 
-  const place = places.find((p) => p.place_id === id);
-
-  // 👉 找这个place对应的events
-  const relatedEvents = mapping
-    .filter((m) => m.place_id === id)
-    .map((m) => events.find((e) => e.event_id === m.event_id))
-    .filter(Boolean);
+  const relatedEvents = useMemo(
+    () =>
+      mapping
+        .filter((row) => String(row.place_id) === String(id))
+        .map((row) => events.find((event) => String(event.event_id) === String(row.event_id)))
+        .filter(Boolean),
+    [id],
+  )
 
   if (!place) {
     return (
-      <div style={{ padding: "20px" }}>
-        <h2>Place not found</h2>
-        <button onClick={() => navigate(-1)}>Back</button>
+      <div className="detail-page">
+        <button className="detail-back" onClick={() => navigate(-1)}>
+          ← Back
+        </button>
+        <div className="content-card detail-card">
+          <h2>Place not found</h2>
+          <p>This place record could not be loaded.</p>
+        </div>
       </div>
-    );
+    )
   }
 
   return (
-    <div style={{ padding: "24px", maxWidth: "800px", margin: "auto" }}>
-      <button onClick={() => navigate(-1)}>← Back</button>
+    <div className="detail-page">
+      <button className="detail-back" onClick={() => navigate(-1)}>
+        ← Back
+      </button>
 
-      <h1>{place.card_name}</h1>
-
-      <p><strong>Type:</strong> {place.card_type}</p>
-      <p><strong>Location:</strong> {place.latitude}, {place.longitude}</p>
-
-      {place.meta && (
-        <>
-          <p><strong>Access:</strong> {place.meta.publicness_level}</p>
-          <p><strong>Food:</strong> {place.meta.food_share_level}</p>
-        </>
-      )}
-
-      {/* 🔥 活动列表 */}
-      <h2>Events at this place</h2>
-      {relatedEvents.length === 0 && <p>No events yet</p>}
-      {relatedEvents.map((e) => (
-        <div key={e.event_id} style={{ marginBottom: "10px" }}>
-          <strong>{e.title}</strong>
-          <p>{e.start_time}</p>
+      <section className="content-card detail-card">
+        <p className="detail-eyebrow">Venue detail</p>
+        <h1 className="detail-title">{place.card_name}</h1>
+        <div className="detail-grid">
+          <div className="detail-grid-item">
+            <strong>Type</strong>
+            <span>{place.card_type}</span>
+          </div>
+          <div className="detail-grid-item">
+            <strong>Postcode</strong>
+            <span>{place.meta?.card_postcode || 'Unavailable'}</span>
+          </div>
+          <div className="detail-grid-item">
+            <strong>Access</strong>
+            <span>{place.meta?.publicness_level || 'Unknown'}</span>
+          </div>
+          <div className="detail-grid-item">
+            <strong>Food share level</strong>
+            <span>{place.meta?.food_share_level || 'Unknown'}</span>
+          </div>
         </div>
-      ))}
 
-      <hr />
+        <div className="detail-actions" style={{ marginTop: '24px' }}>
+          <button className="btn-primary" type="button" onClick={() => setShowEditForm((value) => !value)}>
+            Improve this place
+          </button>
+          <button className="btn-secondary" type="button" onClick={() => setShowEventForm((value) => !value)}>
+            Add event here
+          </button>
+        </div>
+      </section>
 
-      {/* 🔥 操作按钮 */}
-      <div style={{ display: "flex", gap: "10px" }}>
-        <button onClick={() => setShowEditForm(true)}>
-          Improve this place
-        </button>
+      <section className="content-card detail-card detail-stack">
+        <h2>Events linked to this place</h2>
+        {relatedEvents.length === 0 ? (
+          <p>No mapped events yet.</p>
+        ) : (
+          relatedEvents.map((event) => (
+            <div className="detail-list-item" key={event.event_id}>
+              <h3>{event.title}</h3>
+              <p>{event.start_time || 'TBC'}</p>
+              <button className="btn-primary" type="button" onClick={() => navigate(`/events/${event.event_id}`, { state: { from: 'place', event } })}>
+                View event
+              </button>
+            </div>
+          ))
+        )}
+      </section>
 
-        <button onClick={() => setShowEventForm(true)}>
-          Add event here
-        </button>
-      </div>
-
-      {/* 🔥 表单 */}
       {showEditForm && (
-        <PlaceEditForm onClose={() => setShowEditForm(false)} place={place} />
+        <section className="content-card detail-card">
+          <PlaceEditForm place={place} onClose={() => setShowEditForm(false)} />
+        </section>
       )}
 
       {showEventForm && (
-        <EventSubmitForm
-          onClose={() => setShowEventForm(false)}
-          placeId={place.place_id}
-        />
+        <section className="content-card detail-card">
+          <h2>Host an event at this venue</h2>
+          <SubmitEventForm placeId={place.place_id} onCancel={() => setShowEventForm(false)} onAddEvent={() => setShowEventForm(false)} />
+        </section>
       )}
     </div>
-  );
+  )
 }

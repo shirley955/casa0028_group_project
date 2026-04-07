@@ -1,0 +1,237 @@
+.admin-page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 32px 20px 72px;
+}
+
+.admin-hero {
+  display: grid;
+  grid-template-columns: 1.3fr 0.9fr;
+  gap: 24px;
+  align-items: stretch;
+  margin-bottom: 24px;
+}
+
+.admin-eyebrow,
+.admin-review-kicker,
+.admin-section-label {
+  margin: 0 0 12px;
+  color: var(--on-surface-variant);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+}
+
+.admin-hero h1 {
+  margin: 0 0 14px;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+}
+
+.admin-hero p {
+  margin: 0;
+  color: var(--on-surface-variant);
+  line-height: 1.75;
+}
+
+.admin-hero-card {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.admin-highlight-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.admin-highlight-list li {
+  padding: 12px 14px;
+  border-radius: var(--radius-lg);
+  background: var(--surface-container-low);
+  color: var(--on-surface);
+  line-height: 1.5;
+}
+
+.admin-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.admin-summary-card {
+  padding: 20px;
+}
+
+.admin-summary-card h2 {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.admin-summary-card p {
+  margin: 8px 0 0;
+  color: var(--on-surface-variant);
+}
+
+.admin-panel-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 20px;
+}
+
+.admin-panel-stack {
+  display: grid;
+  gap: 20px;
+}
+
+.admin-block {
+  padding: 24px;
+}
+
+.admin-block h2,
+.admin-block h3,
+.admin-review-card h3 {
+  margin: 0 0 10px;
+}
+
+.admin-block p {
+  color: var(--on-surface-variant);
+  line-height: 1.7;
+}
+
+.admin-review-list {
+  display: grid;
+  gap: 16px;
+}
+
+.admin-review-card {
+  padding: 20px;
+  display: grid;
+  gap: 14px;
+}
+
+.admin-review-copy {
+  margin: 0;
+  color: var(--on-surface-variant);
+  line-height: 1.65;
+}
+
+.admin-review-details,
+.admin-mapping-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.admin-review-details span,
+.admin-mapping-meta span,
+.admin-log-item span {
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: var(--surface-container-low);
+  font-size: 13px;
+  color: var(--on-surface-variant);
+}
+
+.admin-review-linker {
+  display: grid;
+  gap: 8px;
+}
+
+.admin-review-linker label {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.admin-review-linker-row,
+.admin-mapping-actions,
+.admin-review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.admin-review-linker select,
+.admin-mapping-actions select {
+  flex: 1 1 280px;
+  min-width: 220px;
+  padding: 12px 14px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--surface-container-highest);
+  color: var(--on-surface);
+  font: inherit;
+}
+
+.admin-inline-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.admin-inline-btn-outline {
+  background: var(--surface-container-highest);
+  color: var(--on-surface);
+}
+
+.admin-inline-btn-muted {
+  background: transparent;
+  color: var(--on-surface-variant);
+}
+
+.admin-mapping-list,
+.admin-log-list {
+  display: grid;
+  gap: 14px;
+}
+
+.admin-mapping-card,
+.admin-log-item {
+  padding: 18px;
+  display: grid;
+  gap: 12px;
+}
+
+.admin-mapping-card h3,
+.admin-log-item h4 {
+  margin: 0;
+}
+
+.admin-mapping-card p,
+.admin-log-item p,
+.admin-empty-state p {
+  margin: 0;
+}
+
+.admin-empty-state {
+  padding: 22px;
+}
+
+.admin-empty-state h4 {
+  margin: 0 0 8px;
+}
+
+.admin-log-item p {
+  color: var(--on-surface-variant);
+  line-height: 1.6;
+}
+
+@media (max-width: 960px) {
+  .admin-hero,
+  .admin-panel-grid,
+  .admin-summary-grid {
+    grid-template-columns: 1fr;
+  }
+}

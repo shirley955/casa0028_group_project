@@ -1,7 +1,35 @@
 export const mapping = [
   {
+    "event_id": 1,
+    "place_id": "osm_way_228370465"
+  },
+  {
+    "event_id": 2,
+    "place_id": "osm_node_13374776801"
+  },
+  {
+    "event_id": 3,
+    "place_id": "osm_way_246629463"
+  },
+  {
+    "event_id": 5,
+    "place_id": "osm_way_1357815732"
+  },
+  {
+    "event_id": 6,
+    "place_id": "osm_way_174793675"
+  },
+  {
     "event_id": 7,
     "place_id": "osm_way_935453493"
+  },
+  {
+    "event_id": 8,
+    "place_id": "osm_way_294403102"
+  },
+  {
+    "event_id": 9,
+    "place_id": "osm_way_294403102"
   },
   {
     "event_id": 10,

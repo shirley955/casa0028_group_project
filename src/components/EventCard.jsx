@@ -1,32 +1,57 @@
-// 活动卡片
-// 被 Events.jsx 使用
-
-// 依旧显示筛选后结果。
-
+import './EventCard.css'
+import {
+  getEventDateLabel,
+  getEventDisplayType,
+  getEventImage,
+  getEventLocation,
+  getEventShortDescription,
+} from '../utils/eventUtils'
 
 export default function EventCard({ data, onClick }) {
-  if (!data) return null;
+  if (!data) return null
+
+  const location = getEventLocation(data)
 
   return (
-    <div className="card" onClick={() => onClick(data)}>
-      <div className="card-image"></div>
+    <article
+      className="content-card event-card"
+      onClick={() => onClick?.(data)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(event) => {
+        if ((event.key === 'Enter' || event.key === ' ') && onClick) {
+          event.preventDefault()
+          onClick(data)
+        }
+      }}
+    >
+      <div className="event-card-image-wrap">
+        <img className="event-card-image" src={getEventImage(data)} alt={data.title} />
+        <span className="event-card-date">{getEventDateLabel(data)}</span>
+      </div>
 
-      <div className="card-body">
-        <p className="card-tag">{data.event_category}</p>
+      <div className="event-card-body">
+        <p className="event-card-category">{getEventDisplayType(data)}</p>
 
         <h3>{data.title}</h3>
 
-        <p className="card-time">{data.start_time || "TBC"}</p>
+        <p className="text-muted event-card-description">{getEventShortDescription(data)}</p>
+
+        <p className="event-card-location">
+          <strong>Hosted at:</strong> {location.name}
+        </p>
 
         <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onClick(data);
+          type="button"
+          className="btn-primary"
+          onClick={(event) => {
+            event.stopPropagation()
+            onClick?.(data)
           }}
         >
           View Details
         </button>
       </div>
-    </div>
-  );
+    </article>
+  )
 }

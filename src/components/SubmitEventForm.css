@@ -52,11 +52,33 @@
   box-shadow: 0 0 0 2px rgba(63, 102, 83, 0.18);
 }
 
+.submit-event-helper {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--on-surface-variant);
+}
+
+.submit-event-place-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  background: var(--surface-container-low);
+  border-radius: var(--radius-lg);
+  color: var(--on-surface);
+}
+
+.submit-event-place-summary span {
+  font-size: 13px;
+  color: var(--on-surface-variant);
+}
+
 .submit-event-actions {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-  margin-top: 8px;
+  margin-top: 20px;
 }
 
 .submit-event-cancel {
@@ -74,6 +96,10 @@
 }
 
 @media (max-width: 640px) {
+  .submit-event-form {
+    padding: 22px;
+  }
+
   .submit-event-grid {
     grid-template-columns: 1fr;
   }

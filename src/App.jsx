@@ -10,6 +10,7 @@ import About from "./pages/About";
 
 import EventDetailPage from "./components/EventDetailPage"; // ✅ 加这个
 import PlaceDetailPage from "./components/PlaceDetailPage";
+import AdminPanel from "./components/AdminPanel";
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
         <Route index element={<Explore />} />
         <Route path="events" element={<Events />} />
         <Route path="about" element={<About />} />
+        <Route path="admin" element={<AdminPanel />} />
 
         {/* ✅ 必须放在 Layout 里面 */}
         <Route path="events/:id" element={<EventDetailPage />} />

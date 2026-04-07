@@ -1,10 +1,9 @@
-// 提交 event 表单，填写供审核的信息。
-// 被 Events.jsx 使用
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import './SubmitEventForm.css'
 import { places } from '../data/places_full'
+import { formatPlaceOptionLabel } from '../utils/eventUtils'
 
-export default function SubmitEventForm({ onAddEvent, placeId }) {
+export default function SubmitEventForm({ onAddEvent, placeId, onCancel }) {
   const [formData, setFormData] = useState({
     title: '',
     type: 'Workshop',
@@ -12,40 +11,23 @@ export default function SubmitEventForm({ onAddEvent, placeId }) {
     date: '',
     time: '',
     maxGuests: '',
-    place_id: placeId || '', // ✅ 默认带入
+    place_id: placeId || '',
   })
 
-  function handleChange(e) {
-    const { name, value } = e.target
+  const selectedPlace = useMemo(
+    () => places.find((place) => String(place.place_id) === String(formData.place_id)),
+    [formData.place_id],
+  )
 
-    setFormData((prev) => ({
-      ...prev,
+  function handleChange(event) {
+    const { name, value } = event.target
+    setFormData((previous) => ({
+      ...previous,
       [name]: value,
     }))
   }
 
-  function handleSubmit(e) {
-    e.preventDefault()
-
-    if (!formData.title || !formData.description || !formData.date) {
-      alert('Please complete the required fields.')
-      return
-    }
-
-    const newEvent = {
-      id: Date.now(),
-      event_id: Date.now(), // ✅ 和你原数据结构兼容
-      title: formData.title,
-      event_category: formData.type,
-      start_time: formData.date,
-      description: formData.description,
-      place_id: formData.place_id, // ✅ 关键
-    }
-
-    onAddEvent(newEvent)
-
-    alert('Event submitted successfully!')
-
+  function resetForm() {
     setFormData({
       title: '',
       type: 'Workshop',
@@ -57,22 +39,45 @@ export default function SubmitEventForm({ onAddEvent, placeId }) {
     })
   }
 
+  function handleSubmit(event) {
+    event.preventDefault()
+
+    if (!formData.title || !formData.description || !formData.date || !formData.place_id) {
+      alert('Please complete the title, location, description, and date fields.')
+      return
+    }
+
+    const selectedLocation = places.find((place) => String(place.place_id) === String(formData.place_id))
+
+    const newEvent = {
+      event_id: Date.now(),
+      title: formData.title,
+      event_category: formData.type,
+      event_type: 'community-submission',
+      start_time: [formData.date, formData.time].filter(Boolean).join(' · ') || formData.date,
+      description: formData.description,
+      place_id: formData.place_id,
+      location_text: selectedLocation?.card_name || 'Community venue',
+      venue: selectedLocation?.card_name || 'Community venue',
+      postcode: selectedLocation?.meta?.card_postcode || '',
+      price: formData.maxGuests ? `Capacity ${formData.maxGuests}` : 'Free / community-led',
+      source: 'community-submission',
+      url: '',
+    }
+
+    onAddEvent?.(newEvent)
+    alert('Event submitted successfully. In a full platform flow, this would enter moderation before publishing.')
+    resetForm()
+  }
+
   function handleCancel() {
-    setFormData({
-      title: '',
-      type: 'Workshop',
-      description: '',
-      date: '',
-      time: '',
-      maxGuests: '',
-      place_id: placeId || '',
-    })
+    resetForm()
+    onCancel?.()
   }
 
   return (
     <form className="content-card submit-event-form" onSubmit={handleSubmit}>
       <div className="submit-event-grid">
-
         <div className="submit-event-field">
           <label className="submit-event-label">Event Title</label>
           <input
@@ -81,6 +86,7 @@ export default function SubmitEventForm({ onAddEvent, placeId }) {
             name="title"
             value={formData.title}
             onChange={handleChange}
+            placeholder="Add a clear event title"
           />
         </div>
 
@@ -99,9 +105,8 @@ export default function SubmitEventForm({ onAddEvent, placeId }) {
           </select>
         </div>
 
-        {/* ✅ 只有没有传 placeId 才允许选 */}
         {!placeId && (
-          <div className="submit-event-field">
+          <div className="submit-event-field submit-event-field-full">
             <label className="submit-event-label">Location</label>
             <select
               className="submit-event-select"
@@ -110,28 +115,42 @@ export default function SubmitEventForm({ onAddEvent, placeId }) {
               onChange={handleChange}
             >
               <option value="">Select a place</option>
-
-              {places.map((p) => (
-                <option key={p.place_id} value={p.place_id}>
-                  {p.card_name}
+              {places.slice(0, 80).map((place) => (
+                <option key={place.place_id} value={place.place_id}>
+                  {formatPlaceOptionLabel(place)}
                 </option>
               ))}
             </select>
+            <p className="submit-event-helper">
+              Choose a venue so the event can connect to the Explore map and the place detail page.
+            </p>
+          </div>
+        )}
+
+        {selectedPlace && (
+          <div className="submit-event-place-summary submit-event-field-full">
+            <strong>Selected venue:</strong> {selectedPlace.card_name}
+            <span>
+              {[selectedPlace.meta?.card_postcode, selectedPlace.space_subtype_v2?.replaceAll('_', ' ')].filter(Boolean).join(' · ') || 'Community space'}
+            </span>
           </div>
         )}
 
         <div className="submit-event-field submit-event-field-full">
-          <label>Description</label>
+          <label className="submit-event-label">Description</label>
           <textarea
+            className="submit-event-textarea"
             name="description"
             value={formData.description}
             onChange={handleChange}
+            placeholder="Describe the activity, who it is for, and what attendees should expect."
           />
         </div>
 
         <div className="submit-event-field">
-          <label>Date</label>
+          <label className="submit-event-label">Date</label>
           <input
+            className="submit-event-input"
             type="date"
             name="date"
             value={formData.date}
@@ -140,18 +159,32 @@ export default function SubmitEventForm({ onAddEvent, placeId }) {
         </div>
 
         <div className="submit-event-field">
-          <label>Time</label>
+          <label className="submit-event-label">Time</label>
           <input
+            className="submit-event-input"
             type="time"
             name="time"
             value={formData.time}
             onChange={handleChange}
           />
         </div>
+
+        <div className="submit-event-field">
+          <label className="submit-event-label">Max guests</label>
+          <input
+            className="submit-event-input"
+            type="number"
+            min="1"
+            name="maxGuests"
+            value={formData.maxGuests}
+            onChange={handleChange}
+            placeholder="Optional"
+          />
+        </div>
       </div>
 
       <div className="submit-event-actions">
-        <button type="button" onClick={handleCancel}>
+        <button type="button" className="submit-event-cancel" onClick={handleCancel}>
           Cancel
         </button>
 

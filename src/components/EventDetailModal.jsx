@@ -1,79 +1,83 @@
-// 活动详情弹窗
-// 被 EventCard.jsx 使用
-
-// 跟place联动，This event is hosted at: → [Place name]（可点击）类似的。
-// 用户流的优化很重要
-
-
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom'
+import './EventDetailModal.css'
+import {
+  getEventDateLabel,
+  getEventLocation,
+  getEventShortDescription,
+} from '../utils/eventUtils'
 
 export default function EventDetailModal({ data, onClose }) {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
-  if (!data) return null;
+  if (!data) return null
+
+  const location = getEventLocation(data)
 
   return (
-    <div style={overlayStyle}>
-      <div style={modalStyle}>
-        <button style={closeBtn} onClick={onClose}>
+    <div className="event-modal-overlay" onClick={onClose}>
+      <div className="content-card event-modal" onClick={(event) => event.stopPropagation()}>
+        <button type="button" className="event-modal-close" onClick={onClose}>
           ✕
         </button>
 
-        <h2>{data.title}</h2>
+        <div className="event-modal-header">
+          <span className="event-modal-tag">{data.event_category || 'Event'}</span>
+          <h2>{data.title}</h2>
+          <p className="text-muted">{getEventShortDescription(data, 240)}</p>
+        </div>
 
-        <p>{data.description || "No description available."}</p>
+        <div className="event-modal-grid">
+          <div className="event-modal-stat">
+            <p className="event-modal-stat-label">Time</p>
+            <p className="event-modal-stat-value">{getEventDateLabel(data)}</p>
+          </div>
 
-        <p>
-          <strong>Time:</strong> {data.start_time || "TBC"}
-        </p>
+          <div className="event-modal-stat">
+            <p className="event-modal-stat-label">Format</p>
+            <p className="event-modal-stat-value">{data.event_type || 'In-person / TBD'}</p>
+          </div>
 
-        <p>
-          <strong>Category:</strong> {data.event_category || "event"}
-        </p>
+          <div className="event-modal-stat">
+            <p className="event-modal-stat-label">Venue</p>
+            <p className="event-modal-stat-value">{location.name}</p>
+          </div>
 
-        <p>
-          <strong>Venue:</strong> {data.location_text || data.venue || "Unknown"}
-        </p>
+          <div className="event-modal-stat">
+            <p className="event-modal-stat-label">Extra details</p>
+            <p className="event-modal-stat-value">{location.subtitle || data.price || 'More information available on the detail page.'}</p>
+          </div>
+        </div>
 
-        <button
-          onClick={() => {
-            onClose();
-            navigate(`/events/${data.event_id}`, {
-                state: { from: "event" }
-            });
-          }}
-        >
-          View full details
-        </button>
+        <div className="event-modal-actions">
+          <button
+            type="button"
+            className="btn-primary"
+            onClick={() => {
+              onClose()
+              navigate(`/events/${data.event_id}`, {
+                state: { from: 'event', event: data },
+              })
+            }}
+          >
+            View full details
+          </button>
+
+          {location.placeId && (
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={() => {
+                onClose()
+                navigate(`/places/${location.placeId}`, {
+                  state: { from: 'event', event: data },
+                })
+              }}
+            >
+              View venue
+            </button>
+          )}
+        </div>
       </div>
     </div>
-  );
+  )
 }
-
-const overlayStyle = {
-  position: "fixed",
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  background: "rgba(0,0,0,0.5)",
-  zIndex: 999,
-};
-
-const modalStyle = {
-  background: "#fff",
-  width: "420px",
-  maxHeight: "80vh",
-  overflowY: "auto",
-  margin: "100px auto",
-  padding: "24px",
-  borderRadius: "12px",
-  position: "relative",
-};
-
-const closeBtn = {
-  position: "absolute",
-  top: "10px",
-  right: "10px",
-  cursor: "pointer",
-};
