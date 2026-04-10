@@ -1,0 +1,167 @@
+.joinus-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(20, 28, 24, 0.42);
+  backdrop-filter: blur(6px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+/* ===== Modal 主体 ===== */
+.joinus-modal {
+  position: relative;
+  width: min(920px, 100%);
+  max-height: 85vh;
+  overflow-y: auto;
+
+  background: #ffffff;
+  border-radius: 28px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.18);
+}
+
+/* ===== 内容 ===== */
+.joinus-modal-content {
+  padding: 56px 56px 48px;
+}
+
+/* ===== 关闭按钮 ===== */
+.joinus-modal-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 999px;
+  background: #f2f4f3;
+  color: #233128;
+  font-size: 26px;
+  cursor: pointer;
+}
+
+.joinus-modal-close:hover {
+  background: #e7ece9;
+}
+
+/* ===== 标题区 ===== */
+.joinus-modal-eyebrow {
+  margin: 0 0 16px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #9a4c44;
+}
+
+.joinus-modal-title {
+  margin: 0 0 28px;
+  font-size: clamp(2.4rem, 4vw, 3.2rem);
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  color: #111714;
+}
+
+/* ===== intro ===== */
+.joinus-intro {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 32px;
+  color: #43524a;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+/* ===== section 容器 ===== */
+.joinus-sections {
+  display: grid;
+  gap: 22px;
+}
+
+/* ===== 每一块（关键） ===== */
+.joinus-section {
+  padding: 22px 24px;
+  border-radius: 18px;
+  background: #f7f9f8;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.joinus-section:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+}
+
+/* ===== section 标题 ===== */
+.joinus-section h3 {
+  margin: 0 0 8px;
+  font-size: 1.15rem;
+  color: #111714;
+}
+
+/* ===== section 文本 ===== */
+.joinus-section p {
+  margin: 0;
+  color: #43524a;
+  font-size: 0.95rem;
+  line-height: 1.65;
+}
+
+/* ===== list ===== */
+.joinus-list {
+  margin: 12px 0 16px;
+  padding-left: 18px;
+  color: #43524a;
+  font-size: 0.92rem;
+}
+
+.joinus-list li {
+  margin-bottom: 4px;
+}
+
+/* ===== 按钮 ===== */
+.joinus-modal-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-top: 14px;
+  min-height: 46px;
+  padding: 0 18px;
+
+  border-radius: 12px;
+  background: var(--primary);
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.9rem;
+
+  transition: all 0.15s ease;
+}
+
+.joinus-modal-link:hover {
+  background: var(--primary-container);
+  transform: translateY(-1px);
+}
+
+/* ===== 移动端 ===== */
+@media (max-width: 640px) {
+  .joinus-modal-overlay {
+    padding: 16px;
+  }
+
+  .joinus-modal {
+    max-height: 88vh;
+    border-radius: 22px;
+  }
+
+  .joinus-modal-content {
+    padding: 32px 22px 28px;
+  }
+
+  .joinus-modal-title {
+    font-size: 2rem;
+  }
+}
