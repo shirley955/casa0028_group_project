@@ -32,9 +32,9 @@ export default function PlaceCard({ data, onClick, onHover }) {
             className="place-card-image"
           />
         ) : (
-          <div className="place-card-image-placeholder">
-            Image coming soon
-          </div>
+          <div className="card-image-placeholder">
+          <span>Image coming soon</span>
+        </div>
         )}
       </div>
 

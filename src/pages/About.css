@@ -21,6 +21,7 @@
   text-transform: uppercase;
 }
 
+
 .about-title {
   margin: 0 0 18px;
   font-size: clamp(40px, 6vw, 60px);

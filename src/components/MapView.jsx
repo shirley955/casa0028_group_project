@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
-import { useRef } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import Map, { Source, Layer, Popup } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
+import "./MapLegend.css";
 
 export default function MapView({
   mode,
@@ -11,16 +11,35 @@ export default function MapView({
   mapCenter,
   userLocation,
   setVisibleItems,
-  hoveredId   // ⭐ 新增
+  hoveredId,
+  mapReady,
 }) {
+  const containerRef = useRef(null);
+  const mapRef = useRef(null);
+
   const [viewState, setViewState] = useState({
     longitude: mapCenter[0],
     latitude: mapCenter[1],
-    zoom: 12.5,
+    zoom: 13,
   });
 
-  const mapRef = useRef(null);
   const [popupInfo, setPopupInfo] = useState(null);
+
+  const data = mode === "event" ? (events || []) : (places || []);
+
+  useEffect(() => {
+    if (!containerRef.current || !mapRef.current) return;
+
+    const map = mapRef.current.getMap();
+
+    const observer = new ResizeObserver(() => {
+      map.resize();
+    });
+
+    observer.observe(containerRef.current);
+
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -32,14 +51,12 @@ export default function MapView({
     });
   }, [mapCenter]);
 
-  /* ⭐ data */
-  const data = mode === "event" ? (events || []) : (places || []);
+  const getCoords = (d, currentMode = mode) => {
+    let lng;
+    let lat;
 
-  const getCoords = (d) => {
-    let lng, lat;
-
-    if (mode === "event") {
-      if (!d.coords) return null;
+    if (currentMode === "event") {
+      if (!d?.coords) return null;
 
       if (typeof d.coords === "string") {
         try {
@@ -56,8 +73,8 @@ export default function MapView({
         return null;
       }
     } else {
-      lng = d.longitude;
-      lat = d.latitude;
+      lng = d?.longitude;
+      lat = d?.latitude;
     }
 
     if (
@@ -72,6 +89,26 @@ export default function MapView({
     return [lng, lat];
   };
 
+  const isRenderableItem = (d, currentMode = mode) => {
+    const coords = getCoords(d, currentMode);
+    if (!coords) return false;
+
+    if (currentMode === "event") {
+      return (
+        d?.event_id !== null &&
+        d?.event_id !== undefined &&
+        Boolean(d?.title) &&
+        (Boolean(d?.postcode) || Boolean(d?.location_text) || Boolean(d?.venue))
+      );
+    }
+
+    return (
+      d?.place_id !== null &&
+      d?.place_id !== undefined &&
+      Boolean(d?.card_name)
+    );
+  };
+
   const updateVisibleItems = () => {
     if (!mapRef.current || !setVisibleItems) return;
 
@@ -79,7 +116,9 @@ export default function MapView({
     const bounds = map.getBounds();
 
     const inView = data.filter((d) => {
-      const coords = getCoords(d);
+      if (!isRenderableItem(d, mode)) return false;
+
+      const coords = getCoords(d, mode);
       if (!coords) return false;
 
       const [lng, lat] = coords;
@@ -96,11 +135,17 @@ export default function MapView({
   };
 
   useEffect(() => {
+    setPopupInfo(null);
+
+    // 先清空上一个 mode 留下的卡片数据，避免 event / place 互串
+    if (setVisibleItems) {
+      setVisibleItems([]);
+    }
+
     if (!mapRef.current) return;
     updateVisibleItems();
-  }, [mode, data]);
+  }, [mode, events, places]);
 
-  // ⭐ 修复地图缩小（核心）
   useEffect(() => {
     if (!mapRef.current) return;
 
@@ -108,132 +153,172 @@ export default function MapView({
     requestAnimationFrame(() => {
       map.resize();
     });
-  }, [data, mode]);
+  }, [mode, events, places]);
 
-  const geojson = useMemo(() => {
-    const features = data
-      .map((d) => {
-        const coords = getCoords(d);
-        if (!coords) return null;
+  const baseItems = useMemo(() => {
+    return data.filter((d) => {
+      if (!isRenderableItem(d, mode)) return false;
+      const id = mode === "event" ? d.event_id : d.place_id;
+      return hoveredId === null || hoveredId === undefined || id !== hoveredId;
+    });
+  }, [data, mode, hoveredId]);
 
-        const [lng, lat] = coords;
+  const hoveredItem = useMemo(() => {
+    if (hoveredId === null || hoveredId === undefined) return null;
 
-        return {
+    return (
+      data.find((d) => {
+        if (!isRenderableItem(d, mode)) return false;
+        const id = mode === "event" ? d.event_id : d.place_id;
+        return id === hoveredId;
+      }) || null
+    );
+  }, [data, mode, hoveredId]);
+
+  const baseGeojson = useMemo(() => {
+    return {
+      type: "FeatureCollection",
+      features: baseItems
+        .map((d) => {
+          const coords = getCoords(d, mode);
+          if (!coords) return null;
+
+          const [lng, lat] = coords;
+
+          return {
+            type: "Feature",
+            geometry: {
+              type: "Point",
+              coordinates: [lng, lat],
+            },
+            properties: {
+              id: mode === "event" ? d.event_id : d.place_id,
+              title:
+                mode === "event"
+                  ? d.title || "Untitled event"
+                  : d.card_name || "Unnamed place",
+              subtitle:
+                mode === "event"
+                  ? d.event_category || d.event_type || "event"
+                  : d.card_type || "place",
+              raw: JSON.stringify(d),
+            },
+          };
+        })
+        .filter(Boolean),
+    };
+  }, [baseItems, mode]);
+
+  const hoveredGeojson = useMemo(() => {
+    if (!hoveredItem) {
+      return {
+        type: "FeatureCollection",
+        features: [],
+      };
+    }
+
+    const coords = getCoords(hoveredItem, mode);
+    if (!coords) {
+      return {
+        type: "FeatureCollection",
+        features: [],
+      };
+    }
+
+    const [lng, lat] = coords;
+
+    return {
+      type: "FeatureCollection",
+      features: [
+        {
           type: "Feature",
           geometry: {
             type: "Point",
             coordinates: [lng, lat],
           },
           properties: {
-            id: mode === "event" ? d.event_id : d.place_id,
+            id: mode === "event" ? hoveredItem.event_id : hoveredItem.place_id,
             title:
               mode === "event"
-                ? d.title || "Untitled event"
-                : d.card_name || "Unnamed place",
+                ? hoveredItem.title || "Untitled event"
+                : hoveredItem.card_name || "Unnamed place",
             subtitle:
               mode === "event"
-                ? d.event_category || "event"
-                : d.card_type || "place",
-            raw: JSON.stringify(d),
+                ? hoveredItem.event_category || hoveredItem.event_type || "event"
+                : hoveredItem.card_type || "place",
+            raw: JSON.stringify(hoveredItem),
           },
-        };
-      })
-      .filter(Boolean);
-
-    return {
-      type: "FeatureCollection",
-      features,
+        },
+      ],
     };
-  }, [data, mode]);
+  }, [hoveredItem, mode]);
 
-  const haloLayer = useMemo(
-    () => ({
-      id: "points-halo",
-      type: "circle",
-      paint: {
-        "circle-radius": hoveredId
-          ? [
-              "case",
-              ["==", ["get", "id"], hoveredId],
-              30,   // ⭐ 光晕大小（可以调）
-              0,
-            ]
-          : 0,
-
-        "circle-color": "#ffcc00",
-
-        "circle-opacity": 0.3,
-        "circle-blur": 1.5,
-      },
-    }),
-    [hoveredId]
-  );
-
-  // ⭐ 高亮逻辑（只改这里）
-  const circleLayer = useMemo(
+  const baseCircleLayer = useMemo(
     () => ({
       id: "points-layer",
       type: "circle",
       paint: {
-        "circle-radius": hoveredId
-          ? [
-              "case",
-              ["==", ["get", "id"], hoveredId],
-              26,   // ⭐ 更大（之前10不够）
-              [
-                "interpolate",
-                ["linear"],
-                ["zoom"],
-                8, 3,
-                12, 4,
-                16, 6,
-              ],
-            ]
-          : [
-              "interpolate",
-              ["linear"],
-              ["zoom"],
-              8, 3,
-              12, 4,
-              16, 6,
-            ],
-
-        // ⭐ hover 改亮色（关键）
-        "circle-color": hoveredId
-          ? [
-              "case",
-              ["==", ["get", "id"], hoveredId],
-              "#ffcc00",   // ⭐ 高亮黄（非常明显）
-              mode === "event" ? "#b3263d" : "#0c4a2f",
-            ]
-          : (mode === "event" ? "#b3263d" : "#0c4a2f"),
-
-        // ⭐ 外圈更粗
-        "circle-stroke-width": hoveredId
-          ? [
-              "case",
-              ["==", ["get", "id"], hoveredId],
-              3,
-              0.5,
-            ]
-          : 0.5,
-
+        "circle-radius": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          8, 3,
+          12, 4,
+          16, 5,
+        ],
+        "circle-color": mode === "event" ? "#b3263d" : "#0c4a2f",
+        "circle-stroke-width": 0.8,
         "circle-stroke-color": "#ffffff",
-
-        // ⭐ 光晕（核心提升感知）
-        "circle-blur": hoveredId
-          ? [
-              "case",
-              ["==", ["get", "id"], hoveredId],
-              0.3,
-              0,
-            ]
-          : 0,
       },
     }),
-    [mode, hoveredId]
+    [mode]
   );
 
+  const hoveredHaloLayer = useMemo(
+    () => ({
+      id: "hovered-halo-layer",
+      type: "circle",
+      paint: {
+        "circle-radius": [
+        "interpolate",
+        ["linear"],
+        ["zoom"],
+        8, 18,
+        12, 22,
+        16, 26,
+      ],
+      "circle-color": "#e49000",
+
+      // ⭐ 更亮
+      "circle-opacity": 0.45,
+
+      // ⭐ 更柔（关键）
+      "circle-blur": 2.3,
+      },
+    }),
+    []
+  );
+
+  const hoveredPointLayer = useMemo(
+    () => ({
+      id: "hovered-point-layer",
+      type: "circle",
+      paint: {
+        "circle-radius": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          8, 4.5,
+          12, 5.5,
+          16, 6.5,
+        ],
+        "circle-color": "#e49000",
+        "circle-stroke-width": 2,
+        "circle-stroke-color": "#ffffff",
+      },
+    }),
+    []
+  );
 
   const handleMapClick = (event) => {
     const feature = event.features?.[0];
@@ -253,91 +338,133 @@ export default function MapView({
     });
   };
 
+  const formatType = (str) => {
+    if (!str) return "";
+
+    return str
+      .toLowerCase()
+      .replace(/_/g, " ")
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+  };
+
+
   return (
-    <div className="map">
-      <Map
-        ref={mapRef}
-        {...viewState}
-        onMove={(evt) => setViewState(evt.viewState)}
-        onMoveEnd={() => updateVisibleItems()}
-        onLoad={() => {
-          updateVisibleItems();
+    <div className="map" ref={containerRef}>
+      {mapReady && (
+        <Map
+          ref={mapRef}
+          {...viewState}
+          onMove={(evt) => setViewState(evt.viewState)}
+          onMoveEnd={updateVisibleItems}
+          onLoad={() => {
+            updateVisibleItems();
 
-          const map = mapRef.current?.getMap();
-          if (map) {
-            requestAnimationFrame(() => {
+            const map = mapRef.current?.getMap();
+            if (!map) return;
+
+            setTimeout(() => {
               map.resize();
-            });
-          }
-        }}
-        onClick={handleMapClick}
-        interactiveLayerIds={["points-layer"]}
-        style={{ width: "100%", height: "100%" }}
-        mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
-      >
-        <Source id="points-source" type="geojson" data={geojson}>
-          {/* ⭐ 光晕层（必须在前面） */}
-          <Layer {...haloLayer} />
-
-          {/* 原来的点 */}
-          <Layer {...circleLayer} />
-        </Source>
-
-        {userLocation && (
-          <Source
-            id="user-location"
-            type="geojson"
-            data={{
-              type: "FeatureCollection",
-              features: [
-                {
-                  type: "Feature",
-                  geometry: {
-                    type: "Point",
-                    coordinates: userLocation,
-                  },
-                },
-              ],
-            }}
-          >
-            <Layer
-              id="user-point"
-              type="circle"
-              paint={{
-                "circle-radius": 8,
-                "circle-color": "#3B82F6",
-                "circle-stroke-width": 3,
-                "circle-stroke-color": "#ffffff",
-              }}
-            />
+            }, 50);
+          }}
+          onClick={handleMapClick}
+          interactiveLayerIds={["points-layer", "hovered-point-layer"]}
+          style={{ width: "100%", height: "100%" }}
+          mapStyle="https://tiles.stadiamaps.com/styles/alidade_smooth.json"
+        >
+          <Source id="points-source" type="geojson" data={baseGeojson}>
+            <Layer {...baseCircleLayer} />
           </Source>
-        )}
 
-        {popupInfo && (
-          <Popup
-            longitude={popupInfo.longitude}
-            latitude={popupInfo.latitude}
-            closeButton={true}
-            closeOnClick={false}
-            onClose={() => setPopupInfo(null)}
-            offset={12}
-          >
-            <div className="map-popup">
-              <p className="map-popup-tag">{popupInfo.subtitle}</p>
-              <h4>{popupInfo.title}</h4>
-              <button
-                type="button"
-                onClick={() => {
-                  setSelected(popupInfo.raw);
-                  setPopupInfo(null);
+          <Source id="hovered-point-source" type="geojson" data={hoveredGeojson}>
+            <Layer {...hoveredHaloLayer} />
+            <Layer {...hoveredPointLayer} />
+          </Source>
+
+          {userLocation && (
+            <Source
+              id="user-location"
+              type="geojson"
+              data={{
+                type: "FeatureCollection",
+                features: [
+                  {
+                    type: "Feature",
+                    geometry: {
+                      type: "Point",
+                      coordinates: userLocation,
+                    },
+                  },
+                ],
+              }}
+            >
+              <Layer
+                id="user-point"
+                type="circle"
+                paint={{
+                  "circle-radius": 7,
+                  "circle-color": "#3B82F6",
+                  "circle-stroke-width": 2.5,
+                  "circle-stroke-color": "#ffffff",
                 }}
-              >
-                View Details
-              </button>
-            </div>
-          </Popup>
-        )}
-      </Map>
+              />
+            </Source>
+          )}
+
+          {popupInfo && (
+            <Popup
+              longitude={popupInfo.longitude}
+              latitude={popupInfo.latitude}
+              closeButton={true}
+              closeOnClick={false}
+              onClose={() => setPopupInfo(null)}
+              offset={12}
+            >
+              <div className="map-popup">
+                <p className="map-popup-tag">
+                  {mode === "place"
+                    ? popupInfo.subtitle
+                        ?.toLowerCase()
+                        .replace(/_/g, " ")
+                        .replace(/\b\w/g, (c) => c.toUpperCase())
+                    : popupInfo.subtitle}
+                </p>
+                <h4>{popupInfo.title}</h4>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelected(popupInfo.raw);
+                    setPopupInfo(null);
+                  }}
+                >
+                  View Details
+                </button>
+              </div>
+            </Popup>
+          )}
+        </Map>
+      )}
+
+      <div className="map-legend">
+        <div className="legend-item">
+          <span
+            className={`legend-dot ${
+              mode === "event" ? "legend-event" : "legend-place"
+            }`}
+          />
+          <span>{mode === "event" ? "Event" : "Place"}</span>
+          location
+        </div>
+
+        <div className="legend-item">
+          <span className="legend-dot legend-hover" />
+          <span>Selected card</span>
+        </div>
+
+        <div className="legend-item">
+          <span className="legend-dot legend-user" />
+          <span>Your location</span>
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import MapView from "../components/MapView";
 import MapFilters from "../components/MapFilters";
@@ -15,6 +15,8 @@ import "./Explore.css";
 
 export default function Explore() {
   const location = useLocation();
+
+  const [mapMounted, setMapMounted] = useState(false);
 
   const [entered, setEntered] = useState(
     sessionStorage.getItem("explore_seen") === "true"
@@ -54,6 +56,16 @@ export default function Explore() {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   };
 
+  useEffect(() => {
+    if (entered) {
+      const timer = setTimeout(() => {
+        setMapMounted(true);
+      }, 700);   // ⭐ 比动画稍长
+
+      return () => clearTimeout(timer);
+    }
+  }, [entered]);
+
   const [userLocation, setUserLocation] = useState(null);
   const [mode, setMode] = useState(location.state?.mode || "place");
   const [selected, setSelected] = useState(null);
@@ -77,9 +89,53 @@ export default function Explore() {
     setVisibleItems([]);
   }, [mode, filters]);
 
-  const displayItems = visibleItems.filter((item) =>
-    mode === "event" ? item?.event_id : item?.place_id
-  );
+  const displayItems = useMemo(() => {
+    if (!Array.isArray(visibleItems)) return [];
+
+    if (mode === "event") {
+      const validEventIds = new Set(
+        filteredEvents
+          .filter(
+            (item) =>
+              item &&
+              item.event_id !== null &&
+              item.event_id !== undefined &&
+              item.title
+          )
+          .map((item) => String(item.event_id))
+      );
+
+      return visibleItems.filter(
+        (item) =>
+          item &&
+          item.event_id !== null &&
+          item.event_id !== undefined &&
+          item.title &&
+          validEventIds.has(String(item.event_id))
+      );
+    }
+
+    const validPlaceIds = new Set(
+      filteredPlaces
+        .filter(
+          (item) =>
+            item &&
+            item.place_id !== null &&
+            item.place_id !== undefined &&
+            item.card_name
+        )
+        .map((item) => String(item.place_id))
+    );
+
+    return visibleItems.filter(
+      (item) =>
+        item &&
+        item.place_id !== null &&
+        item.place_id !== undefined &&
+        item.card_name &&
+        validPlaceIds.has(String(item.place_id))
+    );
+  }, [visibleItems, mode, filteredEvents, filteredPlaces]);
 
   return (
     <div className={`explore-page ${entered ? "entered" : "landing"}`}>
@@ -118,6 +174,7 @@ export default function Explore() {
                 onClick={() => {
                   setMode("event");
                   setSelected(null);
+                  setHoveredId(null);
                   setFilters({});
                 }}
               >
@@ -131,6 +188,7 @@ export default function Explore() {
                 onClick={() => {
                   setMode("place");
                   setSelected(null);
+                  setHoveredId(null);
                   setFilters({});
                 }}
               >
@@ -151,6 +209,7 @@ export default function Explore() {
             </div>
 
             <MapView
+              key={`map-${mode}-${filters.type || "all"}`}
               mode={mode}
               events={filteredEvents}
               places={filteredPlaces}
@@ -158,7 +217,8 @@ export default function Explore() {
               mapCenter={mapCenter}
               userLocation={userLocation}
               setVisibleItems={setVisibleItems}
-              hoveredId={hoveredId} 
+              hoveredId={hoveredId}
+              mapReady={mapMounted}
             />
           </div>
 
@@ -183,9 +243,19 @@ export default function Explore() {
             <div className="explore-card-grid">
               {displayItems.map((item) =>
                 mode === "event" ? (
-                  <EventCard key={item.event_id} data={item} onClick={setSelected} onHover={setHoveredId}/>
+                  <EventCard
+                    key={`event-${item.event_id}`}
+                    data={item}
+                    onClick={setSelected}
+                    onHover={setHoveredId}
+                  />
                 ) : (
-                  <PlaceCard key={item.place_id} data={item} onClick={setSelected} onHover={setHoveredId}/>
+                  <PlaceCard
+                    key={`place-${item.place_id}`}
+                    data={item}
+                    onClick={setSelected}
+                    onHover={setHoveredId}
+                  />
                 )
               )}
             </div>

@@ -3,24 +3,29 @@ import {
   getEventDateLabel,
   getEventDisplayType,
   getEventImage,
-  getEventLocation,
-  getEventShortDescription,
 } from '../utils/eventUtils'
 
 export default function EventCard({ data, onClick, onHover }) {
-  if (!data) return null
+  if (!data || data.event_id === undefined || data.event_id === null) return null
 
-  const location = getEventLocation(data)
+  const postcode =
+    data.postcode ||
+    'Postcode unavailable'
+
+  const category =
+    getEventDisplayType(data) ||
+    data.event_category ||
+    data.event_type ||
+    'Event'
+
+  const title = data.title || 'Untitled event'
 
   return (
     <article
       className="content-card event-card"
       onClick={() => onClick?.(data)}
-
-      // ⭐ 新增 hover（唯一核心改动）
       onMouseEnter={() => onHover?.(data.event_id)}
       onMouseLeave={() => onHover?.(null)}
-
       role="button"
       tabIndex={0}
       onKeyDown={(event) => {
@@ -34,7 +39,7 @@ export default function EventCard({ data, onClick, onHover }) {
         <img
           className="event-card-image"
           src={getEventImage(data)}
-          alt={data.title}
+          alt={title}
         />
         <span className="event-card-date">
           {getEventDateLabel(data)}
@@ -42,19 +47,11 @@ export default function EventCard({ data, onClick, onHover }) {
       </div>
 
       <div className="event-card-body">
-        <p className="event-card-category">
-          {getEventDisplayType(data)}
-        </p>
+        <p className="event-card-category">{category}</p>
 
-        <h3>{data.title}</h3>
+        <h3 className="event-card-title">{title}</h3>
 
-        <p className="text-muted event-card-description">
-          {getEventShortDescription(data)}
-        </p>
-
-        <p className="event-card-location">
-          <strong>Hosted at:</strong> {location.name}
-        </p>
+        <p className="event-card-postcode">{postcode}</p>
 
         <button
           type="button"

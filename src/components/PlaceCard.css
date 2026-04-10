@@ -24,23 +24,50 @@
 .place-card-image {
   display: block;
   width: 100%;
-  height: 220px;
+  height: 140px;
   object-fit: cover;
 }
 
-.place-card-image-placeholder {
-  width: 100%;
-  height: 220px;
+.card-image-placeholder {
+  height: 140px;
+  border-radius: 12px;
+  
   display: flex;
   align-items: center;
   justify-content: center;
-  background:
-    linear-gradient(135deg, rgba(1, 45, 29, 0.06), rgba(1, 45, 29, 0.02));
-  color: var(--on-surface-variant);
+
+  /* ⭐ 关键：让它看起来是 intentional */
+  background: linear-gradient(
+    135deg,
+    #f3f4f6,
+    #e5e7eb
+  );
+
+  color: #6b7280;
   font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-weight: 600;
+
+  position: relative;
+  overflow: hidden;
+}
+
+/* ⭐ subtle pattern（高级感） */
+.card-image-placeholder::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(
+    120deg,
+    transparent 30%,
+    rgba(255,255,255,0.4) 50%,
+    transparent 70%
+  );
+  animation: shimmer 2.2s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 
 .place-card-badge {
@@ -60,9 +87,10 @@
   display: flex;
   flex-direction: column;
   flex: 1;
-  gap: 12px;
-  padding: 22px;
-  min-height: 250px;
+  gap: 8px;
+  padding: 14px;
+  min-height: 190px;
+
 }
 
 .place-card-category {
@@ -76,15 +104,12 @@
 
 .place-card-body h3 {
   margin: 0;
-  font-size: 26px;
+  font-size: 20px;
   line-height: 1.18;
   letter-spacing: -0.02em;
   font-weight: 800;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
   overflow: hidden;
-  min-height: 62px;
+  min-height: 65px;
 }
 
 .place-card-meta {
