@@ -117,5 +117,3 @@ Potential extensions include:
 - expanding to other types of community activity beyond food  
 
 ---
-
-## Repository Structure
