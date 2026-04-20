@@ -46,6 +46,7 @@ export default function Navbar() {
       <JoinUsModal
         isOpen={showJoinModal}
         onClose={() => setShowJoinModal(false)}
+        mode="default"
       />
     </>
   );

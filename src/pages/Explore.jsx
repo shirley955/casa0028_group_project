@@ -6,6 +6,7 @@ import EventCard from "../components/EventCard";
 import PlaceCard from "../components/PlaceCard";
 import EventDetailModal from "../components/EventDetailModal";
 import PlaceDetailModal from "../components/PlaceDetailModal";
+import JoinUsModal from "../components/JoinUsModal";
 
 import { events } from "../data/events_full";
 import { places } from "../data/places_full";
@@ -84,6 +85,8 @@ export default function Explore() {
   );
 
   const [visibleItems, setVisibleItems] = useState([]);
+  const [showJoinModal, setShowJoinModal] = useState(false);
+  const [joinMode, setJoinMode] = useState("default");
 
   useEffect(() => {
     setVisibleItems([]);
@@ -206,6 +209,20 @@ export default function Explore() {
                 places={safePlaces}
                 setUserLocation={setUserLocation}
               />
+
+              {mode === "place" && (
+                <div style={{ marginTop: "12px" }}>
+                  <button
+                    className="explore-add-place-btn"
+                    onClick={() => {
+                      setJoinMode("place");
+                      setShowJoinModal(true);
+                    }}
+                  >
+                    + Add your place
+                  </button>
+                </div>
+              )}
             </div>
 
             <MapView
@@ -270,6 +287,12 @@ export default function Explore() {
       {selected && mode === "place" && (
         <PlaceDetailModal data={selected} onClose={() => setSelected(null)} />
       )}
+
+      <JoinUsModal
+        isOpen={showJoinModal}
+        onClose={() => setShowJoinModal(false)}
+        mode={joinMode}
+      />
     </div>
   );
 }
