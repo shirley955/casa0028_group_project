@@ -11,7 +11,7 @@
   padding: 40px;
 }
 
-/* ===== Modal 主体 ===== */
+/* Modal shell */
 .joinus-modal {
   position: relative;
   width: min(920px, 100%);
@@ -23,12 +23,12 @@
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.18);
 }
 
-/* ===== 内容 ===== */
+/* Content */
 .joinus-modal-content {
   padding: 56px 56px 48px;
 }
 
-/* ===== 关闭按钮 ===== */
+/* Close button */
 .joinus-modal-close {
   position: absolute;
   top: 20px;
@@ -47,7 +47,7 @@
   background: #e7ece9;
 }
 
-/* ===== 标题区 ===== */
+/* Header */
 .joinus-modal-eyebrow {
   margin: 0 0 16px;
   font-size: 0.75rem;
@@ -65,7 +65,7 @@
   color: #111714;
 }
 
-/* ===== intro ===== */
+/* Intro text */
 .joinus-intro {
   display: grid;
   gap: 12px;
@@ -75,13 +75,13 @@
   line-height: 1.7;
 }
 
-/* ===== section 容器 ===== */
+/* Participation sections */
 .joinus-sections {
   display: grid;
   gap: 22px;
 }
 
-/* ===== 每一块（关键） ===== */
+/* Participation card */
 .joinus-section {
   padding: 22px 24px;
   border-radius: 18px;
@@ -94,14 +94,14 @@
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
 }
 
-/* ===== section 标题 ===== */
+/* Section heading */
 .joinus-section h3 {
   margin: 0 0 8px;
   font-size: 1.15rem;
   color: #111714;
 }
 
-/* ===== section 文本 ===== */
+/* Section text */
 .joinus-section p {
   margin: 0;
   color: #43524a;
@@ -109,7 +109,7 @@
   line-height: 1.65;
 }
 
-/* ===== list ===== */
+/* Contribution list */
 .joinus-list {
   margin: 12px 0 16px;
   padding-left: 18px;
@@ -121,7 +121,7 @@
   margin-bottom: 4px;
 }
 
-/* ===== 按钮 ===== */
+/* Action link */
 .joinus-modal-link {
   display: inline-flex;
   align-items: center;
@@ -146,7 +146,7 @@
   transform: translateY(-1px);
 }
 
-/* ===== 移动端 ===== */
+/* Mobile layout */
 @media (max-width: 640px) {
   .joinus-modal-overlay {
     padding: 16px;
@@ -167,31 +167,31 @@
 }
 
 
-/* ===== submit place modal（小一点 + 更方）===== */
+/* Submit place modal */
 .submit-modal {
   width: min(520px, 100%);
   max-height: 80vh;
   overflow-y: auto;
 
   background: #ffffff;
-  border-radius: 16px; /* 👈 比原来小，接近“方” */
+  border-radius: 16px;
   padding: 28px;
 
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
 }
 
-/* 内容稍微紧凑一点 */
+/* Compact modal content */
 .submit-modal .joinus-modal-content {
   padding: 0;
 }
 
-/* 标题缩一点 */
+/* Modal title */
 .submit-modal h2 {
   font-size: 1.6rem;
   margin-bottom: 12px;
 }
 
-/* code 区再紧一点 */
+/* Code block */
 .submit-modal .joinus-code {
   font-size: 0.8rem;
   padding: 12px;

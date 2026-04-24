@@ -1,6 +1,3 @@
-// 主页面，最上层的聚合页面，所有最上层component得最终去向。
-// 筛选页面放进来就行了，剩下的东西都往页面的单独文件里导
-
 import { Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
 
@@ -8,7 +5,7 @@ import Explore from "./pages/Explore";
 import Events from "./pages/Events";
 import About from "./pages/About";
 
-import EventDetailPage from "./components/EventDetailPage"; // ✅ 加这个
+import EventDetailPage from "./components/EventDetailPage";
 import PlaceDetailPage from "./components/PlaceDetailPage";
 import AdminPanel from "./components/AdminPanel";
 
@@ -20,8 +17,6 @@ export default function App() {
         <Route path="events" element={<Events />} />
         <Route path="about" element={<About />} />
         <Route path="admin" element={<AdminPanel />} />
-
-        {/* ✅ 必须放在 Layout 里面 */}
         <Route path="events/:id" element={<EventDetailPage />} />
         <Route path="places/:id" element={<PlaceDetailPage />} />
       </Route>

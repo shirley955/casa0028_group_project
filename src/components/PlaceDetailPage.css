@@ -51,8 +51,8 @@
 
 .detail-hero-layout {
   display: grid;
-  grid-template-columns: 1.3fr 1fr;   /* 🔥 改这里 */
-  gap: 40px;                          /* 🔥 增加间距 */
+  grid-template-columns: 1.3fr 1fr;
+  gap: 40px;
 }
 
 .detail-hero-main {
@@ -94,7 +94,7 @@
   flex-direction: column;
   gap: 18px;
 
-  padding-bottom: 8px;   /* 🔥 新增 */
+  padding-bottom: 8px;
 }
 
 .detail-grid {
@@ -102,7 +102,7 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
 
-  margin-bottom: 12px;   /* 🔥 关键：切断 grid 和按钮 */
+  margin-bottom: 12px;
 }
 
 .detail-grid-item {
@@ -136,8 +136,8 @@
   display: flex;
   gap: 16px;
 
-  margin-top: 24px;   /* 🔥 关键：拉开和上面内容 */
-  padding-top: 8px;   /* 🔥 可选：增加缓冲 */
+  margin-top: 24px;
+  padding-top: 8px;
 }
 
 .btn-primary,

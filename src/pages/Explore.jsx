@@ -61,7 +61,7 @@ export default function Explore() {
     if (entered) {
       const timer = setTimeout(() => {
         setMapMounted(true);
-      }, 700);   // ⭐ 比动画稍长
+      }, 700);   // Wait for the landing transition to finish.
 
       return () => clearTimeout(timer);
     }

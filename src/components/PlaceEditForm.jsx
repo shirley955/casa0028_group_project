@@ -7,13 +7,12 @@ export default function PlaceEditForm({ onClose, place }) {
 
   const fileInputRef = useRef(null);
 
-  // ⭐ 读取已保存图片
+  // Load any locally saved image preview for the selected place.
   useEffect(() => {
     const saved = localStorage.getItem(`place_image_${place.place_id}`);
     if (saved) setPreview(saved);
   }, [place.place_id]);
 
-  // ⭐ 上传处理
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -28,7 +27,7 @@ export default function PlaceEditForm({ onClose, place }) {
     reader.readAsDataURL(file);
   };
 
-  // ⭐ 提交
+  // Store the uploaded image for this prototype form.
   const handleSubmit = () => {
     if (image) {
       localStorage.setItem(`place_image_${place.place_id}`, image);
@@ -54,7 +53,7 @@ export default function PlaceEditForm({ onClose, place }) {
 
       <textarea placeholder="Add notes about facilities, contact details, or booking guidance" />
 
-      {/* ⭐ 上传（直接用按钮） */}
+      {/* Button-triggered image upload */}
       <div style={{ marginTop: "12px" }}>
         <button
           type="button"
@@ -71,14 +70,12 @@ export default function PlaceEditForm({ onClose, place }) {
           style={{ display: "none" }}
         />
 
-        {/* 文件名提示 */}
         {fileName && (
           <p className="text-muted" style={{ marginTop: "6px" }}>
             Selected: {fileName}
           </p>
         )}
 
-        {/* 预览 */}
         {preview && (
           <img
             src={preview}
@@ -94,7 +91,6 @@ export default function PlaceEditForm({ onClose, place }) {
         )}
       </div>
 
-      {/* 原按钮结构完全保留 */}
       <div className="detail-actions">
         <button className="btn-primary" type="button" onClick={handleSubmit}>
           Submit suggestion

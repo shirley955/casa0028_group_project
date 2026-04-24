@@ -137,7 +137,7 @@ export default function MapView({
   useEffect(() => {
     setPopupInfo(null);
 
-    // 先清空上一个 mode 留下的卡片数据，避免 event / place 互串
+    // Clear visible cards from the previous mode before recalculating the map view.
     if (setVisibleItems) {
       setVisibleItems([]);
     }
@@ -289,10 +289,8 @@ export default function MapView({
       ],
       "circle-color": "#e49000",
 
-      // ⭐ 更亮
       "circle-opacity": 0.45,
 
-      // ⭐ 更柔（关键）
       "circle-blur": 2.3,
       },
     }),

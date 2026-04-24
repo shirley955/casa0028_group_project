@@ -3,8 +3,6 @@ import SubmitPlaceModal from "./SubmitPlaceModal";
 import "./JoinUsModal.css";
 
 export default function JoinUsModal({ isOpen, onClose, mode = "default" }) {
-
-  // ✅ 必须放最上面（修复白屏核心）
   const [showSubmitModal, setShowSubmitModal] = useState(false);
 
   useEffect(() => {
@@ -57,7 +55,7 @@ export default function JoinUsModal({ isOpen, onClose, mode = "default" }) {
               Work with GatherHub
             </h2>
 
-            {/* ===== 简要说明 ===== */}
+            {/* Project overview */}
             <div className="joinus-intro">
               <p>
                 GatherHub is an ongoing prototype exploring how food-related
@@ -70,10 +68,9 @@ export default function JoinUsModal({ isOpen, onClose, mode = "default" }) {
               </p>
             </div>
 
-            {/* ===== 三类参与方式 ===== */}
+            {/* Ways to take part */}
             <div className="joinus-sections">
 
-              {/* 3. submit place */}
               <div className="joinus-section">
                 <h3>Add a place</h3>
                 <p>
@@ -91,7 +88,6 @@ export default function JoinUsModal({ isOpen, onClose, mode = "default" }) {
                 </button>
               </div>
 
-              {/* 1. contributor */}
               <div className="joinus-section">
                 <h3>Contribute to the project</h3>
                 <p>
@@ -115,7 +111,6 @@ export default function JoinUsModal({ isOpen, onClose, mode = "default" }) {
                 </a>
               </div>
 
-              {/* 2. organisation */}
               <div className="joinus-section">
                 <h3>Collaborate as an organisation</h3>
                 <p>
@@ -140,7 +135,7 @@ export default function JoinUsModal({ isOpen, onClose, mode = "default" }) {
         </div>
       </div>
 
-      {/* ✅ 放在外面（更稳定，不嵌套结构） */}
+      {/* Keep this modal outside the overlay so it manages its own close state. */}
       <SubmitPlaceModal
         isOpen={showSubmitModal}
         onClose={() => setShowSubmitModal(false)}

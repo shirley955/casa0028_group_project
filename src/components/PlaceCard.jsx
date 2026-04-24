@@ -18,12 +18,9 @@ export default function PlaceCard({ data, onClick, onHover }) {
     <div
       className="place-card"
       onClick={() => onClick(data)}
-
-      // ⭐ 新增 hover（唯一改动核心）
       onMouseEnter={() => onHover?.(data.place_id)}
       onMouseLeave={() => onHover?.(null)}
     >
-      {/* ⭐ image / placeholder */}
       <div className="place-card-image-wrap">
         {data.image ? (
           <img
@@ -38,7 +35,6 @@ export default function PlaceCard({ data, onClick, onHover }) {
         )}
       </div>
 
-      {/* ⭐ body */}
       <div className="place-card-body">
         <p className="place-card-category">{category}</p>
 

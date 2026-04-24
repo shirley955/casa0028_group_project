@@ -1,7 +1,4 @@
-// 地图筛选器（area / feature / availability）
-// 控制地图和列表的数据过滤
-// 被 Explore.jsx 使用
-// 可能可以显示用户位置，或输入邮编跳转位置。使用fly to功能。
+// Controls the location search and category filter used by the Explore map.
 
 import { useState } from "react";
 
@@ -21,7 +18,7 @@ export default function MapFilters({
       ? [...new Set(events.map((e) => e.event_category).filter(Boolean))]
       : [...new Set(places.map((p) => p.card_type).filter(Boolean))];
 
-  // 📍 定位
+  // Use browser geolocation to recenter the map.
   const handleLocate = () => {
     if (!navigator.geolocation) {
       alert("Geolocation not supported");
@@ -34,7 +31,7 @@ export default function MapFilters({
         const lat = pos.coords.latitude;
 
         setMapCenter([lng, lat]);
-        setUserLocation([lng, lat]);   // ✅ 新增
+        setUserLocation([lng, lat]);
       },
       () => {
         alert("Unable to get your location");
@@ -42,7 +39,7 @@ export default function MapFilters({
     );
   };
 
-  // 🔍 postcode 搜索（🔥已改：不用 API key）
+  // Nominatim keeps postcode lookup lightweight for this prototype.
   const handlePostcodeSearch = async () => {
     if (!postcode) return;
 
@@ -65,7 +62,7 @@ export default function MapFilters({
         const lat = parseFloat(data[0].lat);
 
         setMapCenter([lng, lat]);
-        setUserLocation([lng, lat]);   // 新增定位
+        setUserLocation([lng, lat]);
       } else {
         alert("Postcode not found");
       }
@@ -78,7 +75,7 @@ export default function MapFilters({
   return (
     <div className="filters map-filters">
 
-      {/* 🔍 搜索组 */}
+      {/* Location search */}
       <div className="filter-group">
         <span className="filter-label">Find a Location</span>
 
@@ -101,10 +98,9 @@ export default function MapFilters({
         </div>
       </div>
 
-      {/* ⭐ 分隔线 */}
       <div className="filter-divider" />
 
-      {/* 🎯 分类筛选 */}
+      {/* Category filter */}
       <div className="filter-group">
         <span className="filter-label">Category</span>
 

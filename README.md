@@ -1,33 +1,33 @@
 # GatherHub
 
-GatherHub is a web-based prototype that explores how food-related community activity can be understood through the relationship between **events and physical spaces**.
+GatherHub is a student web prototype that explores how food-related community activity connects with **events and physical spaces**.
 
-The platform brings together data on shared kitchens, community venues, and food-led events, allowing users to view local activity not only as isolated listings, but in relation to the places where it occurs.
+The platform brings together data on shared kitchens, community venues, and food-led events, helping users see local activity alongside the places where it happens.
 
 ---
 
 ## Conceptual Framing
 
-This project focuses on food-related activity not as a theme, but as a form of everyday practice through which social connections are gradually formed.
+This project treats food-related activity as an everyday practice through which local social connections can gradually form.
 
-For many people in cities like London, especially those who have recently arrived, opportunities to build local networks are uneven. While some groups have access to institutional settings such as universities or workplaces, others rely more heavily on informal, repeated interactions embedded in daily life.
+For many people in cities such as London, especially recent arrivals, opportunities to build local networks are uneven. Some groups can access universities, workplaces, or other institutional settings, while others rely more on informal and repeated interactions in daily life.
 
-Food practice, such as cooking, sharing meals, or preparing food for others, is one such form of activity. It is typically situated in private space, but can shift into shared or semi-public contexts when supported by appropriate environments, such as community kitchens, halls, or organised events.
+Cooking, sharing meals, and preparing food for others often begin in private spaces, but they can move into shared or semi-public settings when suitable environments are available. Community kitchens, halls, and organised events can all support this shift.
 
-This transition from private practice to shared activity is not automatic. It depends on the availability and accessibility of places that can accommodate these practices. In this sense, space is not simply a backdrop, but an active condition that enables, shapes, and limits how social interaction unfolds.
+The move from private practice to shared activity depends on the availability and accessibility of places that can host these activities. In this project, space is therefore treated as an active condition that shapes how social interaction can happen.
 
-By examining how food-related events are connected to specific places, this project explores how everyday practices become visible, shared, and spatially situated within the city. It also highlights the role of community infrastructure in supporting forms of participation that are often informal and underrepresented in formal data systems.
+By examining how food-related events connect to specific places, GatherHub looks at how everyday practices become visible, shared, and situated within the city. It also points to the role of community infrastructure in supporting forms of participation that are often informal or underrepresented in formal datasets.
 
 
 ## Project Overview
 
-Many forms of everyday community activity, such as shared meals, workshops, and small gatherings, depend on access to appropriate spaces. However, information about these spaces and their associated events is often fragmented across different platforms.
+Many everyday community activities, such as shared meals, workshops, and small gatherings, depend on access to appropriate spaces. However, information about these spaces and their associated events is often split across different platforms.
 
 This project investigates how linking **events to places** can support:
 
-- clearer understanding of where community activity happens  
-- easier navigation between participation and hosting  
-- improved visibility of local food-related practices  
+- a clearer understanding of where community activity happens
+- easier navigation between joining an event and finding a space to host one
+- better visibility for local food-related practices
 
 The prototype focuses on **food-led activity** as a specific and observable entry point into community life.
 
@@ -49,16 +49,16 @@ The interface is designed to support both:
 
 ## Data and Linking Approach
 
-Data is compiled from multiple sources, including publicly available event platforms and manually curated venue datasets.
+Data was compiled from multiple sources, including publicly available event platforms and manually curated venue datasets.
 
 Due to the fragmented nature of real-world data:
 
 - only a subset of events can be reliably linked to specific venues  
 - many events contain incomplete or ambiguous location information  
 
-As a result, the platform implements **partial event–place linking**, where connections are established only when sufficiently clear.
+As a result, the platform uses **partial event-place linking**, where connections are made only when the relationship is sufficiently clear.
 
-This is not treated as a limitation alone, but as part of the investigation. The prototype reflects how community activity is currently represented across disconnected systems, and explores how stronger spatial linkage could be developed.
+We treat this partial coverage as part of the investigation, not only as a limitation. The prototype reflects how community activity is currently represented across disconnected systems, while also testing how stronger spatial links might be developed.
 
 ---
 
@@ -92,18 +92,18 @@ By foregrounding the relationship between **food practices and physical space**,
 - how infrastructure (such as kitchens and community venues) supports social interaction  
 - how data fragmentation can obscure opportunities for participation  
 
-The project therefore contributes to ongoing discussions in urban studies and spatial design around **community infrastructure, accessibility, and visibility of local activity**.
+The project contributes to discussions in urban studies and spatial design around **community infrastructure, accessibility, and visibility of local activity**.
 
 ---
 
 ## Limitations
 
-- Event–place linkage is incomplete and partially manual  
+- Event-place linkage is incomplete and partially manual
 - Event data varies in quality and consistency across sources  
 - Spatial coverage is limited to available datasets  
 - The prototype does not account for temporal dynamics (e.g. recurring events, cancellations)
 
-These limitations are acknowledged as part of the design exploration rather than fully resolved within the current implementation.
+These limitations are acknowledged as part of the design exploration rather than fully resolved in the current implementation.
 
 ---
 

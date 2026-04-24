@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import './AdminPanel.css'
 import ReviewQueue from './ReviewQueue'
 import { events } from '../data/events_full'
+import { mapping } from '../data/mapping'
 import { places } from '../data/places_full'
 import {
   formatPlaceOptionLabel,
@@ -21,6 +22,7 @@ const initialPendingSubmissions = [
     venueHint: 'Hackney shared kitchen',
     description: 'A low-cost evening meal for nearby residents, with extra portions reserved for food support referrals.',
     selectedPlaceId: 'osm_way_935453493',
+    venueStatus: 'has-venue',
   },
   {
     id: 'submission-2',
@@ -30,7 +32,8 @@ const initialPendingSubmissions = [
     submittedBy: 'Local parent group',
     venueHint: 'Needs an accessible venue in Southwark',
     description: 'A practical cooking class for parents and children, designed around affordable ingredients and shared meals.',
-    selectedPlaceId: 'osm_way_59063097',
+    selectedPlaceId: '',
+    venueStatus: 'needs-venue',
   },
   {
     id: 'submission-3',
@@ -41,7 +44,16 @@ const initialPendingSubmissions = [
     venueHint: 'Bow / Poplar area',
     description: 'Volunteers help sort ingredients, assemble meal packs, and welcome residents collecting support food parcels.',
     selectedPlaceId: '',
+    venueStatus: 'needs-venue',
   },
+]
+
+const governanceChecklist = [
+  'Who can use this space, and under what conditions?',
+  'Are community-led activities prioritised over commercial uses?',
+  'Who is responsible for maintenance, safety, and care?',
+  'Can this become a recurring relationship rather than a one-off booking?',
+  'What contribution does the activity make back to the shared resource?',
 ]
 
 function buildInitialMappingQueue() {
@@ -78,16 +90,23 @@ export default function AdminPanel() {
   ])
 
   const placeOptions = useMemo(() => places.slice(0, 80), [])
+  const submissionsWithVenue = useMemo(
+    () => pendingSubmissions.filter((item) => item.venueStatus === 'has-venue'),
+    [pendingSubmissions],
+  )
+  const submissionsNeedingVenue = useMemo(
+    () => pendingSubmissions.filter((item) => item.venueStatus === 'needs-venue'),
+    [pendingSubmissions],
+  )
 
   const summary = useMemo(() => {
-    const linkedPendingCount = pendingSubmissions.filter((item) => item.selectedPlaceId).length
     return {
-      pending: pendingSubmissions.length,
-      mapping: mappingQueue.length,
-      linkedPending: linkedPendingCount,
-      venues: places.length,
+      resources: places.length,
+      communityLinks: mapping.length,
+      proposedVenue: submissionsWithVenue.length,
+      needsVenue: submissionsNeedingVenue.length + mappingQueue.length,
     }
-  }, [pendingSubmissions, mappingQueue, placeOptions])
+  }, [submissionsWithVenue, submissionsNeedingVenue, mappingQueue])
 
   function pushLog(title, body, tag) {
     setActivityLog((prev) => [
@@ -162,82 +181,125 @@ export default function AdminPanel() {
     <main className="admin-page">
       <section className="admin-hero">
         <div className="page-section">
-          <p className="admin-eyebrow">Admin dashboard</p>
-          <h1>Moderate new submissions and keep events connected to real venues.</h1>
+          <p className="admin-eyebrow">Commons governance dashboard</p>
+          <h1>Review shared food spaces as resources, relationships, and rules.</h1>
           <p>
-            This lightweight admin layer adds a governance view to GatherHub. It shows which events still need review,
-            which items still need a place link, and how moderation decisions affect what becomes visible on the
-            public-facing platform.
+            This lightweight admin layer reframes GatherHub as more than a matching platform. It shows which resources
+            are visible, which event-place relationships need review, and where stronger governance would be needed for
+            shared use over time.
           </p>
         </div>
 
         <aside className="content-card admin-hero-card">
           <div>
             <p className="admin-section-label">Why this page matters</p>
-            <h3>Beyond display, the platform also needs moderation.</h3>
+            <h3>A commons needs more than public access.</h3>
           </div>
 
           <ul className="admin-highlight-list">
-            <li>Check pending event submissions before they reach the public event feed.</li>
-            <li>Assign or repair venue links when an event is missing spatial context.</li>
-            <li>Keep a lightweight record of moderation actions taken inside the prototype.</li>
+            <li>Identify the shared resource: kitchens, halls, venues, and the data that describes them.</li>
+            <li>Review the community relationship between organisers, venue holders, and participants.</li>
+            <li>Surface governance gaps around access rules, care, priority, and responsibility.</li>
           </ul>
         </aside>
       </section>
 
       <section className="admin-summary-grid">
         <article className="content-card admin-summary-card">
-          <p className="admin-section-label">Pending submissions</p>
-          <h2>{summary.pending}</h2>
-          <p>Items still waiting for moderation.</p>
+          <p className="admin-section-label">Resources mapped</p>
+          <h2>{summary.resources}</h2>
+          <p>Places available as potential shared resources.</p>
         </article>
 
         <article className="content-card admin-summary-card">
-          <p className="admin-section-label">Mapping issues</p>
-          <h2>{summary.mapping}</h2>
-          <p>Events that still need a venue assignment.</p>
+          <p className="admin-section-label">Community links</p>
+          <h2>{summary.communityLinks}</h2>
+          <p>Event-place links already visible in the prototype data.</p>
         </article>
 
         <article className="content-card admin-summary-card">
-          <p className="admin-section-label">Linked pending items</p>
-          <h2>{summary.linkedPending}</h2>
-          <p>Submissions already connected to a place.</p>
+          <p className="admin-section-label">With proposed venue</p>
+          <h2>{summary.proposedVenue}</h2>
+          <p>Submissions that already bring a host space.</p>
         </article>
 
         <article className="content-card admin-summary-card">
-          <p className="admin-section-label">Venue options</p>
-          <h2>{summary.venues}</h2>
-          <p>Available places surfaced for admin linking.</p>
+          <p className="admin-section-label">Need venue support</p>
+          <h2>{summary.needsVenue}</h2>
+          <p>Activities that still need a suitable place.</p>
         </article>
+      </section>
+
+      <section className="content-card admin-commons-readiness">
+        <div>
+          <p className="admin-section-label">Commons readiness</p>
+          <h2>From one-off matching toward shared stewardship</h2>
+          <p>
+            The current system can connect people to places. The next step is to ask whether those connections create
+            durable relationships, shared responsibilities, and clear rules for access.
+          </p>
+        </div>
+
+        <div className="admin-readiness-steps">
+          <span>Resource</span>
+          <span>Community</span>
+          <span>Governance</span>
+        </div>
       </section>
 
       <section className="admin-panel-grid">
         <div className="admin-panel-stack">
           <section className="page-section admin-block">
-            <p className="admin-section-label">Moderation queue</p>
-            <h2>Pending submissions</h2>
+            <p className="admin-section-label">Category 1</p>
+            <h2>Events with a proposed venue</h2>
             <p>
-              Review new community-led events, confirm the venue, and decide whether each submission should progress to
-              the public-facing event page.
+              These submissions already come with a suggested host space. The admin role is to confirm that the venue
+              is suitable, then approve or reject the activity.
             </p>
 
             <ReviewQueue
-              items={pendingSubmissions}
+              items={submissionsWithVenue}
               places={placeOptions}
               onApprove={handleApproveSubmission}
               onReject={handleRejectSubmission}
               onPlaceChange={handleSubmissionPlaceChange}
               onLink={handleSaveSubmissionLink}
+              emptyTitle="No venue-proposed submissions"
+              emptyBody="Submissions with their own proposed venue will appear here."
+              itemKicker="Submission with proposed venue"
+              linkLabel="Proposed venue"
+              showVenueSelector={false}
             />
           </section>
 
           <section className="page-section admin-block">
-            <p className="admin-section-label">Spatial quality control</p>
-            <h2>Venue mapping queue</h2>
+            <p className="admin-section-label">Category 2</p>
+            <h2>Events that need a venue</h2>
             <p>
-              These events are currently missing a clean link back to one of the venue records in GatherHub. Resolve
-              the connection here so the event and place pages remain connected.
+              These activities do not yet have a confirmed host space. The admin role is to suggest a suitable venue,
+              then decide whether the activity has enough resource and community context to move forward.
             </p>
+
+            <ReviewQueue
+              items={submissionsNeedingVenue}
+              places={placeOptions}
+              onApprove={handleApproveSubmission}
+              onReject={handleRejectSubmission}
+              onPlaceChange={handleSubmissionPlaceChange}
+              onLink={handleSaveSubmissionLink}
+              emptyTitle="No new submissions need a venue"
+              emptyBody="New activities that need help finding a host space will appear here."
+              itemKicker="Submission needing venue support"
+              linkLabel="Suggest a suitable venue"
+              saveLabel="Save venue suggestion"
+            />
+
+            <div className="admin-subsection-head">
+              <h3>Existing records without a confirmed venue</h3>
+              <p>
+                These are older event records with location text but no confirmed GatherHub place link yet.
+              </p>
+            </div>
 
             <div className="admin-mapping-list">
               {mappingQueue.length ? mappingQueue.map((item) => (
@@ -251,6 +313,16 @@ export default function AdminPanel() {
                     <span><strong>Type:</strong> {item.type}</span>
                     <span><strong>Date:</strong> {item.date}</span>
                     <span><strong>Event ID:</strong> {item.eventId}</span>
+                    <span><strong>Governance gap:</strong> venue relationship unclear</span>
+                  </div>
+
+                  <div className="admin-governance-prompts">
+                    <p>Before confirming, consider:</p>
+                    <ul>
+                      <li>Is this a one-off event or a recurring relationship?</li>
+                      <li>Who is responsible for the space during and after use?</li>
+                      <li>Does this activity contribute back to the shared resource?</li>
+                    </ul>
                   </div>
 
                   <div className="admin-mapping-actions">
@@ -263,8 +335,13 @@ export default function AdminPanel() {
                       ))}
                     </select>
 
-                    <button type="button" className="btn-primary" onClick={() => handleResolveMapping(item.id)}>
-                      Resolve mapping
+                    <button
+                      type="button"
+                      className="btn-primary"
+                      disabled={!item.selectedPlaceId}
+                      onClick={() => handleResolveMapping(item.id)}
+                    >
+                      {item.selectedPlaceId ? 'Confirm venue link' : 'Choose a place first'}
                     </button>
                   </div>
                 </article>
@@ -280,11 +357,25 @@ export default function AdminPanel() {
 
         <aside className="admin-panel-stack">
           <section className="page-section admin-block">
-            <p className="admin-section-label">Recent actions</p>
-            <h2>Moderation log</h2>
+            <p className="admin-section-label">Governance checklist</p>
+            <h2>Questions before a resource becomes common</h2>
             <p>
-              A simple action feed makes it easier to explain how this prototype manages visibility, quality, and venue
-              linkage without building a full admin backend.
+              These questions mark the difference between a searchable venue database and a commons-oriented system.
+            </p>
+
+            <ul className="admin-checklist">
+              {governanceChecklist.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </section>
+
+          <section className="page-section admin-block">
+            <p className="admin-section-label">Recent actions</p>
+            <h2>Governance log</h2>
+            <p>
+              A simple action feed makes it easier to explain how this prototype manages visibility, quality, and
+              resource relationships without building a full admin backend.
             </p>
 
             <div className="admin-log-list">

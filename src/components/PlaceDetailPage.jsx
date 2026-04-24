@@ -15,7 +15,7 @@ export default function PlaceDetailPage() {
   const [showEditForm, setShowEditForm] = useState(false)
   const [showEventForm, setShowEventForm] = useState(false)
 
-  // ⭐ 新增：form ref
+  // Refs let each optional form scroll into view after it opens.
   const editFormRef = useRef(null)
   const eventFormRef = useRef(null)
 
@@ -33,7 +33,6 @@ export default function PlaceDetailPage() {
     }
   }, [location])
 
-  // ⭐⭐⭐ 关键：自动滚动到 form
   useEffect(() => {
     if (showEditForm && editFormRef.current) {
       editFormRef.current.scrollIntoView({
@@ -219,7 +218,6 @@ export default function PlaceDetailPage() {
         )}
       </section>
 
-      {/* ⭐ 带 ref 的 form */}
       {showEditForm && (
         <section ref={editFormRef} className="content-card detail-card">
           <PlaceEditForm

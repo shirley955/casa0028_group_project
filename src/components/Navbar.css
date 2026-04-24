@@ -17,7 +17,7 @@
   align-items: center;
 }
 
-/* 左边 logo */
+/* Logo */
 .navbar-logo {
   justify-self: start;
   text-decoration: none;
@@ -28,7 +28,7 @@
   line-height: 1;
 }
 
-/* 中间菜单 */
+/* Primary navigation */
 .navbar-links {
   display: flex;
   align-items: center;
@@ -53,7 +53,7 @@
   font-weight: 700;
 }
 
-/* 右边按钮区域 */
+/* Action area */
 .navbar-actions {
   justify-self: end;
 }

@@ -36,7 +36,6 @@
   align-items: center;
   justify-content: center;
 
-  /* ⭐ 关键：让它看起来是 intentional */
   background: linear-gradient(
     135deg,
     #f3f4f6,
@@ -51,7 +50,7 @@
   overflow: hidden;
 }
 
-/* ⭐ subtle pattern（高级感） */
+/* Placeholder image shimmer */
 .card-image-placeholder::after {
   content: "";
   position: absolute;

@@ -8,7 +8,7 @@
   justify-content: center;
 }
 
-/* ⭐ 新 modal（不要再用 .modal） */
+/* Venue modal panel */
 .place-modal {
   background: #fff;
   width: 520px;
@@ -20,7 +20,7 @@
   box-shadow: 0 30px 80px rgba(0,0,0,0.12);
 }
 
-/* close */
+/* Close button */
 .modal-close {
   position: absolute;
   top: 14px;
@@ -33,7 +33,7 @@
   cursor: pointer;
 }
 
-/* header */
+/* Header */
 .place-modal-header {
   margin-bottom: 18px;
 }
@@ -53,7 +53,7 @@
   line-height: 1.2;
 }
 
-/* ⭐ info grid（关键对齐 event modal） */
+/* Quick information grid */
 .place-modal-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -76,7 +76,7 @@
   margin-bottom: 4px;
 }
 
-/* events */
+/* Linked events */
 .place-modal-events {
   margin-top: 10px;
 }
@@ -103,7 +103,7 @@
   color: #999;
 }
 
-/* CTA */
+/* Main action */
 .modal-main-btn {
   margin-top: 24px;
   width: 100%;

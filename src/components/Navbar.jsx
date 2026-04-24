@@ -1,5 +1,3 @@
-// 顶部导航栏，用于跳转页面的。页面jsx都放进来就行
-
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import JoinUsModal from "./JoinUsModal";
